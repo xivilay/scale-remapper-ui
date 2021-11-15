@@ -1,0 +1,28 @@
+{
+    "name": "react-juce-ui-template",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {
+        "react": "^16.13.1",
+        "react-juce": "^0.2.16"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.16.0",
+        "@babel/plugin-proposal-class-properties": "^7.16.0",
+        "@babel/plugin-transform-runtime": "^7.16.0",
+        "@babel/preset-env": "^7.16.0",
+        "@babel/preset-react": "^7.16.0",
+        "@babel/runtime-corejs3": "^7.16.3",
+        "babel-loader": "^8.2.3",
+        "eslint": "^7.32.0",
+        "eslint-plugin-react": "^7.27.0",
+        "svg-inline-loader": "^0.8.0",
+        "url-loader": "^4.1.1",
+        "webpack": "^4.27.1",
+        "webpack-cli": "^3.1.2"
+    },
+    "scripts": {
+        "start": "webpack -w --mode=development",
+        "build": "webpack --mode=production"
+    }
+}

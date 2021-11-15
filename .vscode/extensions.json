@@ -1,0 +1,5 @@
+{
+    // currently it should be patched on win with patch
+    // https://github.com/JoshMarler/vscode-duktape-debug/commit/9086f53ce662e0586f824208628fbd7d143b3d98
+    "recommendations": ["HaroldBrenes.duk-debug"]
+}
