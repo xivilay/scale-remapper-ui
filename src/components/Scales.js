@@ -98,10 +98,8 @@ class Scales extends Component {
 
         transform.forEach((val, i) => {
             if (val == null) {
-                setParameterValueNotifyingHost(`muteKey${i}`, true);
                 setParameterValueNotifyingHost(`transformKey${i}`, normalizeInt(0, keysCount));
             } else {
-                setParameterValueNotifyingHost(`muteKey${i}`, false);
                 setParameterValueNotifyingHost(`transformKey${i}`, normalizeInt(val, keysCount));
             }
         });
