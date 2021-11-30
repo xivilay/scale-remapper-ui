@@ -13,6 +13,9 @@ import { getScaleTransform } from '../theory/scales/remap';
 
 const BASE_SCALE_NAME = 'Ionian';
 
+const tonicsCount = 7;
+const notesCount = 12;
+
 const normalizeInt = (int, range) => (int + range) / (range * 2);
 const normalize = (int, range) => int / (range - 1);
 const denormalize = (float, range) => Math.round(float * (range - 1));
@@ -44,7 +47,7 @@ class Scales extends Component {
         }
         if (changedParamId === 'index') {
             this.setState((prevState) => {
-                const nextIndex = denormalize(currentValue, getScalesCount(7, 12));
+                const nextIndex = denormalize(currentValue, getScalesCount(tonicsCount, notesCount));
                 const prevIndex = prevState.currentScale?.baseIndex;
                 if (prevIndex !== nextIndex) {
                     this._changeScale({ index: nextIndex });
@@ -54,7 +57,7 @@ class Scales extends Component {
         if (changedParamId === 'mode') {
             this.setState((prevState) => {
                 const prevMode = prevState.currentScale?.shift;
-                const modesCount = getModesCount(7, prevMode, 12);
+                const modesCount = getModesCount(tonicsCount, prevMode, notesCount);
                 const nextMode = denormalize(currentValue, modesCount);
                 if (prevMode !== nextMode) {
                     this._changeScale({ mode: nextMode });
@@ -75,7 +78,7 @@ class Scales extends Component {
                 const prevMode = prevState.currentScale?.shift;
                 if (index == undefined) index = prevIndex;
                 if (mode == undefined) mode = prevMode;
-                scale = getScale(7, index, mode, 12);
+                scale = getScale(tonicsCount, index, mode, notesCount);
             }
             this._changeHostParams(scale, prevState.currentScale);
             return { currentScale: scale };
@@ -83,14 +86,14 @@ class Scales extends Component {
     }
 
     _changeHostParams(scale, prevScale) {
-        const keysCount = 12;
+        const keysCount = notesCount;
         const baseScale = getScaleByName(BASE_SCALE_NAME);
         const transform = getScaleTransform(scale, baseScale);
         if (scale.baseIndex !== prevScale?.baseIndex) {
-            setParameterValueNotifyingHost(`index`, normalize(scale.baseIndex, getScalesCount(7, 12)));
+            setParameterValueNotifyingHost(`index`, normalize(scale.baseIndex, getScalesCount(tonicsCount, notesCount)));
         }
         if (scale.shift !== prevScale?.shift) {
-            setParameterValueNotifyingHost(`mode`, normalize(scale.shift, getModesCount(7, scale.shift, 12)));
+            setParameterValueNotifyingHost(`mode`, normalize(scale.shift, getModesCount(tonicsCount, scale.shift, notesCount)));
         }
 
         transform.forEach((val, i) => {
@@ -160,8 +163,8 @@ class Scales extends Component {
     renderModes() {
         const { currentScale } = this.state;
         const currentIndex = currentScale?.baseIndex;
-        const scalesCount = getScalesCount(7, 12);
-        const modesCount = getModesCount(7, currentIndex, 12);
+        const scalesCount = getScalesCount(tonicsCount, notesCount);
+        const modesCount = getModesCount(tonicsCount, currentIndex, notesCount);
         const currentModeIndex = currentScale?.shift;
         const getHandler = (index, count, property, forward) => () => {
             let next = forward ? index + 1 : index - 1;
@@ -245,7 +248,7 @@ class Scales extends Component {
             <>
                 <View {...styles.headingSubContainer} width="100%">
                     <View>
-                        <Text {...styles.text}>{`Tones: 7 (Heptatonic)`}</Text>
+                        <Text {...styles.text}>{`Tones: ${tonicsCount} (Heptatonic)`}</Text>
                     </View>
                     {this.renderToggle()}
                 </View>
