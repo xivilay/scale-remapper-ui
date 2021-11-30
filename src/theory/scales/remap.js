@@ -9,22 +9,25 @@ const getScaleTransform = (scale, base) => {
     let scaleN = 0;
     let nextBaseNoteIndex = 0;
     let nextNoteIndex = 0;
-    return [...Array(length).keys()].map((n) => {
+    const mapped = [...Array(length).keys()].reduce((acc, n) => {
         if (n !== nextBaseNoteIndex) {
-            return null;
+            return acc;
         }
         const returnValue = nextNoteIndex - nextBaseNoteIndex;
 
         const nextIntervalBase = parseInt(base[scaleN]);
         const nextInterval = parseInt(scale[scaleN]);
 
-        if (!nextIntervalBase || !nextInterval) return null;
+        if (!nextIntervalBase || !nextInterval) return acc;
 
         nextBaseNoteIndex += nextIntervalBase;
         nextNoteIndex += nextInterval;
         scaleN++;
-        return returnValue;
-    });
+        acc.push(returnValue);
+        return acc;
+    }, []);
+    if (scale.length <= base.length) return mapped;
+    // TODO add cases when scale tonics > base
 };
 
 const makeGetTransformedNotes = (scale) => (noteIndex) => {
