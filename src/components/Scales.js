@@ -12,8 +12,9 @@ import {
 
 const BASE_SCALE_NAME = 'Ionian';
 
-const tonicsCount = 7;
 const notesCount = 12;
+const minTones = 3;
+const maxTones = 9;
 
 const normalize = (int, range) => int / (range - 1);
 const denormalize = (float, range) => Math.round(float * (range - 1));
@@ -42,6 +43,7 @@ class Scales extends Component {
     _onParameterValueChange(index, changedParamId, defaultValue, currentValue, stringValue) {
         if (changedParamId === 'index') {
             this.setState((prevState) => {
+                const tonicsCount = prevState.currentScale?.tones;
                 const nextIndex = denormalize(currentValue, getScalesCount(tonicsCount, notesCount));
                 const prevIndex = prevState.currentScale?.baseIndex;
                 if (prevIndex !== nextIndex) {
@@ -52,6 +54,7 @@ class Scales extends Component {
         if (changedParamId === 'mode') {
             this.setState((prevState) => {
                 const prevMode = prevState.currentScale?.shift;
+                const tonicsCount = prevState.currentScale?.tones;
                 const modesCount = getModesCount(tonicsCount, prevMode, notesCount);
                 const nextMode = denormalize(currentValue, modesCount);
                 if (prevMode !== nextMode) {
@@ -61,16 +64,19 @@ class Scales extends Component {
         }
     }
 
-    _changeScale({ name, intervals, index, mode }) {
+    _changeScale({ name, intervals, index, mode, tonics }) {
         this.setState((prevState) => {
             let scale;
             if (name) {
                 scale = getScaleByName(name);
             } else if (intervals) {
                 scale = getScaleByIntervals(intervals);
+            } else if (tonics) {
+                scale = getScale(tonics, 0, 0, notesCount);
             } else {
                 const prevIndex = prevState.currentScale?.baseIndex;
                 const prevMode = prevState.currentScale?.shift;
+                const tonicsCount = prevState.currentScale?.tones;
                 if (index == undefined) index = prevIndex;
                 if (mode == undefined) mode = prevMode;
                 scale = getScale(tonicsCount, index, mode, notesCount);
@@ -82,11 +88,21 @@ class Scales extends Component {
 
     _changeHostParams(scale, prevScale) {
         const keysCount = notesCount;
+        const tonicsCount = prevScale?.tones;
         if (scale.baseIndex !== prevScale?.baseIndex) {
-            setParameterValueNotifyingHost(`index`, normalize(scale.baseIndex, getScalesCount(tonicsCount, notesCount)));
+            setParameterValueNotifyingHost(
+                `index`,
+                normalize(scale.baseIndex, getScalesCount(tonicsCount, notesCount))
+            );
         }
         if (scale.shift !== prevScale?.shift) {
-            setParameterValueNotifyingHost(`mode`, normalize(scale.shift, getModesCount(tonicsCount, scale.shift, notesCount)));
+            setParameterValueNotifyingHost(
+                `mode`,
+                normalize(scale.shift, getModesCount(tonicsCount, scale.shift, notesCount))
+            );
+        }
+        if (scale.tones !== prevScale?.tones) {
+            setParameterValueNotifyingHost(`tonics`, normalize(scale.tones - minTones, maxTones - minTones + 1));
         }
 
         scale.intervals.forEach((val, i) => {
@@ -150,6 +166,7 @@ class Scales extends Component {
     renderModes() {
         const { currentScale } = this.state;
         const currentIndex = currentScale?.baseIndex;
+        const tonicsCount = currentScale?.tones;
         const scalesCount = getScalesCount(tonicsCount, notesCount);
         const modesCount = getModesCount(tonicsCount, currentIndex, notesCount);
         const currentModeIndex = currentScale?.shift;
@@ -228,15 +245,61 @@ class Scales extends Component {
         );
     }
 
+    renderTones() {
+        const tonicsMap = {
+            2: 'Dia',
+            3: 'Tri',
+            4: 'Tetra',
+            5: 'Penta',
+            6: 'Hexa',
+            7: 'Hepta',
+            8: 'Octa',
+            9: 'Nona',
+            10: 'Deca',
+        };
+        const { currentScale } = this.state;
+        const tonics = currentScale.tones;
+        const getNextTonics = (forward, tonics) => {
+            let next = forward ? tonics + 1 : tonics - 1;
+            const overflowCondition = forward ? next > maxTones : next < minTones;
+            if (overflowCondition) {
+                next = forward ? minTones : maxTones;
+            }
+            return next;
+        };
+        const tonicsPostfix = tonicsMap[tonics] ? `(${tonicsMap[tonics]}tonic)` : '';
+        return (
+            <View {...styles.headingSubContainer}>
+                <Text {...styles.text}>Tones: </Text>
+                <View>
+                    <Button
+                        onClick={() => {
+                            this._changeScale({ tonics: getNextTonics(false, tonics) });
+                        }}
+                    >
+                        <Text {...styles.text}>{'<'}</Text>
+                    </Button>
+                    <Text {...styles.text}>{`${tonics} `}</Text>
+                    <Button
+                        onClick={() => {
+                            this._changeScale({ tonics: getNextTonics(true, tonics) });
+                        }}
+                    >
+                        <Text {...styles.text}>{'>'}</Text>
+                    </Button>
+                    <Text {...styles.text}>{`${tonicsPostfix}`}</Text>
+                </View>
+            </View>
+        );
+    }
+
     render() {
         const { currentScale } = this.state;
         if (!currentScale) return null;
         return (
             <>
                 <View {...styles.headingSubContainer} width="100%">
-                    <View>
-                        <Text {...styles.text}>{`Tones: ${tonicsCount} (Heptatonic)`}</Text>
-                    </View>
+                    {this.renderTones()}
                     {this.renderToggle()}
                 </View>
                 <View>

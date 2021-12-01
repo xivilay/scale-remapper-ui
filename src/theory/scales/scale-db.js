@@ -55,7 +55,10 @@ const getScaleByIntervals = (scale) => {
     const index = scales.findIndex((scale) => Scale.compare(scale, base));
 
     scale.baseIndex = index;
-    scale.name = namesDB?.[index]?.[shift];
+    if (tones === 7) {
+        scale.name = namesDB?.[index]?.[shift];
+    }
+    
     return scale;
 };
 
@@ -66,7 +69,9 @@ const getScaleByBase = (base, shift = 0) => {
     const index = scales.findIndex((scale) => Scale.compare(scale, base));
 
     scale.baseIndex = index;
-    scale.name = namesDB?.[index]?.[shift];
+    if (tones === 7) {
+        scale.name = namesDB?.[index]?.[shift];
+    }
     return scale;
 }
 
