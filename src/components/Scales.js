@@ -9,14 +9,12 @@ import {
     getModesCount,
     getScalesCount,
 } from '../theory/scales/scale-db';
-import { getScaleTransform } from '../theory/scales/remap';
 
 const BASE_SCALE_NAME = 'Ionian';
 
 const tonicsCount = 7;
 const notesCount = 12;
 
-const normalizeInt = (int, range) => (int + range) / (range * 2);
 const normalize = (int, range) => int / (range - 1);
 const denormalize = (float, range) => Math.round(float * (range - 1));
 
@@ -42,9 +40,6 @@ class Scales extends Component {
     }
 
     _onParameterValueChange(index, changedParamId, defaultValue, currentValue, stringValue) {
-        if (changedParamId === 'transformEnabled') {
-            this.setState({ enabled: stringValue });
-        }
         if (changedParamId === 'index') {
             this.setState((prevState) => {
                 const nextIndex = denormalize(currentValue, getScalesCount(tonicsCount, notesCount));
@@ -87,8 +82,6 @@ class Scales extends Component {
 
     _changeHostParams(scale, prevScale) {
         const keysCount = notesCount;
-        const baseScale = getScaleByName(BASE_SCALE_NAME);
-        const transform = getScaleTransform(scale, baseScale);
         if (scale.baseIndex !== prevScale?.baseIndex) {
             setParameterValueNotifyingHost(`index`, normalize(scale.baseIndex, getScalesCount(tonicsCount, notesCount)));
         }
@@ -96,12 +89,8 @@ class Scales extends Component {
             setParameterValueNotifyingHost(`mode`, normalize(scale.shift, getModesCount(tonicsCount, scale.shift, notesCount)));
         }
 
-        transform.forEach((val, i) => {
-            if (val == null) {
-                setParameterValueNotifyingHost(`transformKey${i}`, normalizeInt(0, keysCount));
-            } else {
-                setParameterValueNotifyingHost(`transformKey${i}`, normalizeInt(val, keysCount));
-            }
+        scale.intervals.forEach((val, i) => {
+            setParameterValueNotifyingHost(`interval${i}`, normalize(val - 1, keysCount));
         });
     }
 
