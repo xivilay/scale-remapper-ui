@@ -30,6 +30,27 @@ const getScaleTransform = (scale, base) => {
     // TODO add cases when scale tonics > base
 };
 
+// octave - octave number
+// tonics - number of tonics in scale
+// shiftMap [0, -1, -1, 0, -1, -1, -1];
+const getNotesMapping = (octave, tonics, scaleTransform = []) => {
+    const whites = [0, 2, 4, 5, 7, 9, 11];
+    const keysCount = 12
+    return [...Array(128).keys()].filter(note => whites.includes(note % keysCount)).map((val, i, acc) => {
+        const base = octave * keysCount;
+        const num = i - acc.indexOf(base);
+        const whiteKeyIndex = num >= 0 ? num % tonics : Math.abs(Math.abs(num + 1) % tonics - tonics + 1);
+        const whiteKeyShift = whites[whiteKeyIndex];
+        const octaveShift = Math.floor(num / tonics);
+        let shift = base + keysCount * octaveShift;
+        shift = shift + whiteKeyShift + (scaleTransform[whiteKeyIndex] || 0);
+        return [val, shift];
+    }).filter(([i, n]) => n >= 0 && n < 128).reduce((acc, [i, n]) => {
+        acc[i] = n;
+        return acc;
+    }, {});
+}
+
 const makeGetTransformedNotes = (scale) => (noteIndex) => {
     const scaleTransformation = getScaleTransform(scale);
     const getTransformedNote = (noteIndex) => {
@@ -42,5 +63,6 @@ const makeGetTransformedNotes = (scale) => (noteIndex) => {
 
 module.exports = {
     getScaleTransform,
+    getNotesMapping,
     makeGetTransformedNotes,
 };
