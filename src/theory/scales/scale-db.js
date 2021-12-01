@@ -4,14 +4,16 @@ const namesDB = require('./heptatonic.json');
 
 const cache = {};
 
-const getNamesList = () => {
-    return Object.keys(namesDB)
-        .reduce((acc, val) => {
-            const modes = namesDB[val];
-            acc.push(...Object.values(modes));
-            return acc;
-        }, [])
-        .sort();
+const getNamesList = (tones) => {
+    return tones === 7
+        ? Object.keys(namesDB)
+              .reduce((acc, val) => {
+                  const modes = namesDB[val];
+                  acc.push(...Object.values(modes));
+                  return acc;
+              }, [])
+              .sort()
+        : [];
 };
 
 const getScalesCount = (tones, length) => getScalesFromCache(tones, length).length;
@@ -58,7 +60,7 @@ const getScaleByIntervals = (scale) => {
     if (tones === 7) {
         scale.name = namesDB?.[index]?.[shift];
     }
-    
+
     return scale;
 };
 
@@ -73,7 +75,7 @@ const getScaleByBase = (base, shift = 0) => {
         scale.name = namesDB?.[index]?.[shift];
     }
     return scale;
-}
+};
 
 module.exports = {
     getModesCount,

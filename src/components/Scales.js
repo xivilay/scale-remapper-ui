@@ -62,6 +62,15 @@ class Scales extends Component {
                 }
             });
         }
+        if (changedParamId === 'tonics') {
+            this.setState((prevState) => {
+                const prevTonics = prevState.currentScale?.tones;
+                const nextTonics = parseInt(stringValue);
+                if (prevTonics != nextTonics) {
+                    this._changeScale({ tonics: nextTonics });
+                }
+            });
+        }
     }
 
     _changeScale({ name, intervals, index, mode, tonics }) {
@@ -137,11 +146,12 @@ class Scales extends Component {
     }
 
     renderBrowser() {
-        const namesList = getNamesList().sort((a, b) => {
+        const currentName = this.state.currentScale?.name;
+        const tonicsCount = this.state.currentScale?.tones;
+        const namesList = getNamesList(tonicsCount).sort((a, b) => {
             const getIndex = (a) => parseInt(a.substring(0, a.indexOf(':')));
             return getIndex(a) - getIndex(b);
         });
-        const currentName = this.state.currentScale?.name;
         const currentIndex = namesList.indexOf(currentName);
         return (
             <View {...styles.listContainer}>
