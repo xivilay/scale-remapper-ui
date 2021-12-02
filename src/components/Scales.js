@@ -91,6 +91,8 @@ class Scales extends Component {
                 const prevMode = prevState.currentScale?.shift;
                 if (index == undefined) index = prevIndex;
                 if (mode == undefined) mode = prevMode;
+                const modesCount = getModesCount(tonicsCount, index, notesCount);
+                if (mode >= modesCount) mode = 0;
                 scale = getScale(tonicsCount, index, mode, notesCount);
             }
             if (!scale) return;
@@ -101,17 +103,16 @@ class Scales extends Component {
 
     _changeHostParams(scale, prevScale) {
         const keysCount = notesCount;
-        const tonicsCount = prevScale?.tones;
         if (scale.baseIndex !== prevScale?.baseIndex) {
             setParameterValueNotifyingHost(
                 `index`,
-                normalize(scale.baseIndex, getScalesCount(tonicsCount, notesCount))
+                normalize(scale.baseIndex, getScalesCount(scale.tones, notesCount))
             );
         }
         if (scale.shift !== prevScale?.shift) {
             setParameterValueNotifyingHost(
                 `mode`,
-                normalize(scale.shift, getModesCount(tonicsCount, scale.shift, notesCount))
+                normalize(scale.shift, getModesCount(scale.tones, scale.shift, notesCount))
             );
         }
         if (scale.tones !== prevScale?.tones) {
