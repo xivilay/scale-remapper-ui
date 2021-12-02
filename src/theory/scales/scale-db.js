@@ -1,6 +1,7 @@
 const genScales = require('./combinations');
 const Scale = require('./scale');
 const heptatonic = require('./heptatonic.json');
+const hexatonic = require('./hexatonic.json');
 const pentatonic = require('./pentatonic.json');
 
 const cache = {};
@@ -18,6 +19,7 @@ const getNamesList = (tones) => {
 
 const getNamesDB = (tones) => {
     if (tones === 5) return pentatonic;
+    if (tones === 6) return hexatonic;
     if (tones === 7) return heptatonic;
     return {};
 };
