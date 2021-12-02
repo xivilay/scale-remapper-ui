@@ -75,9 +75,10 @@ class Scales extends Component {
 
     _changeScale({ name, intervals, index, mode, tonics }) {
         this.setState((prevState) => {
+            const tonicsCount = prevState.currentScale?.tones;
             let scale;
             if (name) {
-                scale = getScaleByName(name);
+                scale = getScaleByName(name, tonicsCount);
             } else if (intervals) {
                 scale = getScaleByIntervals(intervals);
             } else if (tonics) {
@@ -85,11 +86,11 @@ class Scales extends Component {
             } else {
                 const prevIndex = prevState.currentScale?.baseIndex;
                 const prevMode = prevState.currentScale?.shift;
-                const tonicsCount = prevState.currentScale?.tones;
                 if (index == undefined) index = prevIndex;
                 if (mode == undefined) mode = prevMode;
                 scale = getScale(tonicsCount, index, mode, notesCount);
             }
+            if (!scale) return;
             this._changeHostParams(scale, prevState.currentScale);
             return { currentScale: scale };
         });

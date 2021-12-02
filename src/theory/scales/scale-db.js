@@ -1,20 +1,31 @@
 const genScales = require('./combinations');
 const Scale = require('./scale');
-const namesDB = require('./heptatonic.json');
+const heptatonic = require('./heptatonic.json');
+const pentatonic = require('./pentatonic.json');
 
 const cache = {};
 
 const getNamesList = (tones) => {
-    return tones === 7
-        ? Object.keys(namesDB)
-              .reduce((acc, val) => {
-                  const modes = namesDB[val];
-                  acc.push(...Object.values(modes));
-                  return acc;
-              }, [])
-              .sort()
-        : [];
+    const namesDB = getNamesDB(tones);
+    return Object.keys(namesDB)
+        .reduce((acc, val) => {
+            const modes = namesDB[val];
+            acc.push(...Object.values(modes));
+            return acc;
+        }, [])
+        .sort();
 };
+
+const getNamesDB = (tones) => {
+    if (tones === 5) return pentatonic;
+    if (tones === 7) return heptatonic;
+    return {};
+};
+
+const findNameInDB = (tones, index, shift) => {
+    const namesDB = getNamesDB(tones);
+    return namesDB?.[index]?.[shift];
+}
 
 const getScalesCount = (tones, length) => getScalesFromCache(tones, length).length;
 
@@ -34,8 +45,8 @@ const getScale = (tones, index, shift, length) => {
     return getScaleByBase(base, shift);
 };
 
-const getScaleInfoByName = (name) => {
-    const tones = 7; // heptatonicDB
+const getScaleInfoByName = (name, tones) => {
+    const namesDB = getNamesDB(tones);
     for (const index in namesDB) {
         const modes = namesDB[index];
         for (const shift in modes) {
@@ -44,8 +55,8 @@ const getScaleInfoByName = (name) => {
     }
 };
 
-const getScaleByName = (name) => {
-    const info = getScaleInfoByName(name);
+const getScaleByName = (name, tones = 7) => {
+    const info = getScaleInfoByName(name, tones);
     if (!info) return;
     return getScale(...info, 12);
 };
@@ -57,9 +68,7 @@ const getScaleByIntervals = (scale) => {
     const index = scales.findIndex((scale) => Scale.compare(scale, base));
 
     scale.baseIndex = index;
-    if (tones === 7) {
-        scale.name = namesDB?.[index]?.[shift];
-    }
+    scale.name = findNameInDB(tones, index, shift);
 
     return scale;
 };
@@ -71,9 +80,8 @@ const getScaleByBase = (base, shift = 0) => {
     const index = scales.findIndex((scale) => Scale.compare(scale, base));
 
     scale.baseIndex = index;
-    if (tones === 7) {
-        scale.name = namesDB?.[index]?.[shift];
-    }
+    scale.name = findNameInDB(tones, index, shift);
+    
     return scale;
 };
 
