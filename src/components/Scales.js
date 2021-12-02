@@ -158,6 +158,8 @@ class Scales extends Component {
             return getIndex(a) - getIndex(b);
         });
         const currentIndex = namesList.indexOf(currentName);
+        // hack list view incorrectly renders items height
+        const scrollableList = namesList.length > 8 ? styles.scrollableList : {};
         return (
             <View {...styles.listContainer}>
                 <View {...styles.headingContainer}>
@@ -165,7 +167,7 @@ class Scales extends Component {
                 </View>
                 <ListView
                     {...styles.list}
-                    {...styles.scrollableList}
+                    {...scrollableList}
                     data={namesList}
                     renderItem={(item) => {
                         const color = item === currentName ? colors.textActive : colors.text;
