@@ -159,7 +159,7 @@ class Scales extends Component {
         });
         const currentIndex = namesList.indexOf(currentName);
         // hack list view incorrectly renders items height
-        const scrollableList = namesList.length > 8 ? styles.scrollableList : {};
+        const scrollableList = namesList.length > 12 ? styles.scrollableList : {};
         return (
             <View {...styles.listContainer}>
                 <View {...styles.headingContainer}>
