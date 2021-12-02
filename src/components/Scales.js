@@ -44,6 +44,9 @@ class Scales extends Component {
     }
 
     _onParameterValueChange(index, changedParamId, defaultValue, currentValue, stringValue) {
+        if (changedParamId === 'transformEnabled') {
+            this.setState({ enabled: stringValue });
+        }
         if (changedParamId === 'index') {
             this.setState((prevState) => {
                 const tonicsCount = prevState.currentScale?.tones;
