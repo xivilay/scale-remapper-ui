@@ -14,7 +14,7 @@ const BASE_SCALE_NAME = 'Ionian';
 
 const notesCount = 12;
 const minTones = 3;
-const maxTones = 9;
+const maxTones = 12;
 
 const normalize = (int, range) => {
     if (range === 1) return int === 0 ? 0 : 1;
