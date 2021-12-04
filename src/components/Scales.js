@@ -19,7 +19,7 @@ const maxTones = 12;
 const normalize = (int, range) => {
     if (range === 1) return int === 0 ? 0 : 1;
     return int / (range - 1);
-}
+};
 const denormalize = (float, range) => Math.round(float * (range - 1));
 
 class Scales extends Component {
@@ -323,8 +323,10 @@ class Scales extends Component {
                     {this.renderToggle()}
                 </View>
                 <View>
-                    {this.renderBrowser()}
-                    {this.renderModes()}
+                    <View {...styles.headingSubContainer} width="100%">
+                        {this.renderBrowser()}
+                        {this.renderModes()}
+                    </View>
                 </View>
                 {this.renderInfo()}
             </>
@@ -355,7 +357,7 @@ const styles = {
     },
     listContainer: {
         height: 300,
-        width: '50%',
+        width: 250,
         flexDirection: 'column',
         justifyContent: 'space-between',
     },
