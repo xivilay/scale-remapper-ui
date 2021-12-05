@@ -31,6 +31,7 @@ class Scales extends Component {
 
         this.state = {
             enabled: 'On',
+            root: 0,
             currentScale: getScaleByName(BASE_SCALE_NAME),
         };
     }
@@ -46,6 +47,9 @@ class Scales extends Component {
     _onParameterValueChange(index, changedParamId, defaultValue, currentValue, stringValue) {
         if (changedParamId === 'transformEnabled') {
             this.setState({ enabled: stringValue });
+        }
+        if (changedParamId === 'root') {
+            this.setState({ root: parseInt(stringValue) });
         }
         if (changedParamId === 'index') {
             this.setState((prevState) => {
@@ -314,15 +318,32 @@ class Scales extends Component {
     }
 
     renderRoot() {
+        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const min = 0;
+        const max = notes.length - 1;
+        const root = this.state.root || 0;
+        const rootNote= notes[root];
+
+        const next = () => {
+            let nextRoot = root + 1;
+            if (nextRoot > max) nextRoot = min;
+            setParameterValueNotifyingHost(`root`, normalize(nextRoot, notes.length));
+        }
+        const prev = () => {
+            let nextRoot = root - 1;
+            if (nextRoot < min) nextRoot = max;
+            setParameterValueNotifyingHost(`root`, normalize(nextRoot, notes.length));
+        }
+
         return (
             <View {...styles.headingSubContainer}>
                 <Text {...styles.text}>Root: </Text>
                 <View>
-                    <Button onClick={() => {}}>
+                    <Button onClick={prev}>
                         <Text {...styles.text}>{'<'}</Text>
                     </Button>
-                    <Text {...styles.text}>{`C`}</Text>
-                    <Button onClick={() => {}}>
+                    <Text {...styles.text}>{`${rootNote}`}</Text>
+                    <Button onClick={next}>
                         <Text {...styles.text}>{'>'}</Text>
                     </Button>
                 </View>
