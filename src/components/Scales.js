@@ -313,11 +313,29 @@ class Scales extends Component {
         );
     }
 
+    renderRoot() {
+        return (
+            <View {...styles.headingSubContainer}>
+                <Text {...styles.text}>Root: </Text>
+                <View>
+                    <Button onClick={() => {}}>
+                        <Text {...styles.text}>{'<'}</Text>
+                    </Button>
+                    <Text {...styles.text}>{`C`}</Text>
+                    <Button onClick={() => {}}>
+                        <Text {...styles.text}>{'>'}</Text>
+                    </Button>
+                </View>
+            </View>
+        );
+    }
+
     render() {
         const { currentScale } = this.state;
         if (!currentScale) return null;
         return (
             <>
+                {this.renderRoot()}
                 <View {...styles.headingSubContainer} width="100%">
                     {this.renderTones()}
                     {this.renderToggle()}
