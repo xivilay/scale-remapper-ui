@@ -3,6 +3,8 @@ import { getScaleByName, getScaleByIntervals } from '../theory/scales/scale-db';
 
 const NOTES_COUNT = 12;
 
+const denormalize = (float, range) => Math.round(float * range);
+
 const getNext = (forward, current, max, min = 0) => {
     let next = forward ? current + 1 : current - 1;
     const overLimit = forward ? next > max : next < min;
@@ -12,11 +14,17 @@ const getNext = (forward, current, max, min = 0) => {
     return next;
 };
 
-const reduceTonics = (state, forward) => {
+const reduceTonics = (state, forward, rawTonics) => {
+    let nextTonics;
     const [tonics, maxTonics, minTonics] = selectTonics(state);
     const [mode] = selectModes(state);
     const [index] = selectIndexes(state);
-    const nextTonics = getNext(forward, tonics, maxTonics, minTonics);
+    if (!isNaN(rawTonics)) {
+        nextTonics = denormalize(rawTonics, maxTonics - minTonics) + minTonics;
+        if (nextTonics > maxTonics) return state;
+    } else {
+        nextTonics = getNext(forward, tonics, maxTonics, minTonics);
+    }
     let nextState = { ...state, tonics: nextTonics };
     const [, maxIndex] = selectIndexes(nextState);
     if (index > maxIndex) nextState = { ...nextState, index: maxIndex };
@@ -25,10 +33,16 @@ const reduceTonics = (state, forward) => {
     return nextState;
 };
 
-const reduceIndex = (state, forward) => {
-    const [mode] = selectModes(state);
+const reduceIndex = (state, forward, rawIndex) => {
+    let nextIndex;
     const [index, maxIndex] = selectIndexes(state);
-    const nextIndex = getNext(forward, index, maxIndex);
+    if (!isNaN(rawIndex)) {
+        nextIndex = denormalize(rawIndex, maxIndex);
+        if (nextIndex > maxIndex) return state;
+    } else {
+        nextIndex = getNext(forward, index, maxIndex);
+    }
+    const [mode] = selectModes(state);
     let nextState = { ...state, index: nextIndex };
     const [, maxMode] = selectModes(nextState);
     if (mode > maxMode) nextState = { ...nextState, mode: maxMode };
@@ -40,6 +54,9 @@ export default (state, action) => {
         case 'enabled/toggle': {
             return { ...state, enabled: !state.enabled };
         }
+        case 'enabled/set': {
+            return { ...state, enabled: action.value };
+        }
         case 'root/next': {
             const nextRoot = getNext(true, state.root, NOTES_COUNT - 1);
             return { ...state, root: nextRoot };
@@ -48,17 +65,27 @@ export default (state, action) => {
             const nextRoot = getNext(false, state.root, NOTES_COUNT - 1);
             return { ...state, root: nextRoot };
         }
+        case 'root/set': {
+            const nextRoot = denormalize(action.rawValue, NOTES_COUNT - 1);
+            return { ...state, root: nextRoot };
+        }
         case 'index/next': {
             return reduceIndex(state, true);
         }
         case 'index/prev': {
             return reduceIndex(state, false);
         }
+        case 'index/set': {
+            return reduceIndex(state, null, action.rawValue);
+        }
         case 'tonics/next': {
             return reduceTonics(state, true);
         }
         case 'tonics/prev': {
             return reduceTonics(state, false);
+        }
+        case 'tonics/set': {
+            return reduceTonics(state, null, action.rawValue);
         }
         case 'mode/next': {
             const [mode, maxMode] = selectModes(state);
@@ -68,6 +95,12 @@ export default (state, action) => {
         case 'mode/prev': {
             const [mode, maxMode] = selectModes(state);
             const nextMode = getNext(false, mode, maxMode);
+            return { ...state, mode: nextMode };
+        }
+        case 'mode/set': {
+            const [, maxMode] = selectModes(state);
+            const nextMode = denormalize(action.rawValue, maxMode);
+            if (nextMode > maxMode) return state;
             return { ...state, mode: nextMode };
         }
         case 'name/selected': {

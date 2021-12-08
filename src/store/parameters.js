@@ -8,7 +8,6 @@ const normalize = (int, range) => {
     if (range === 1) return int === 0 ? 0 : 1;
     return int / (range - 1);
 };
-const denormalize = (float, range) => Math.round(float * (range - 1));
 
 const NOTES_COUNT = 12;
 
@@ -17,18 +16,18 @@ const store = createStore(reducer, defaultState);
 
 const { dispatch, subscribe } = store;
 
-const parameterValueChangeHandler = (index, changedParamId, defaultValue, currentValue, stringValue) => {
+const parameterValueChangeHandler = (index, changedParamId, defaultValue, currentValue) => {
     switch (changedParamId) {
         case 'transformEnabled':
-            return dispatch({ type: 'enabled/set' });
+            return dispatch({ type: 'enabled/set', value: !!currentValue });
         case 'root':
-            return dispatch({ type: 'root/set' });
+            return dispatch({ type: 'root/set', rawValue: currentValue });
         case 'mode':
-            return dispatch({ type: 'mode/set' });
+            return dispatch({ type: 'mode/set', rawValue: currentValue });
         case 'index':
-            return dispatch({ type: 'index/set' });
+            return dispatch({ type: 'index/set', rawValue: currentValue });
         case 'tonics':
-            return dispatch({ type: 'tonics/set' });
+            return dispatch({ type: 'tonics/set', rawValue: currentValue });
     }
 };
 
@@ -58,26 +57,26 @@ subscribe(() => {
         paramsToUpdate.push(...[`index`, `mode`, `tonics`, `enabled`, `root`]);
     }
 
+    if (paramsToUpdate.includes('enabled')) {
+        setParameterValueNotifyingHost('transformEnabled', enabled);
+    }
+    if (paramsToUpdate.includes('root')) {
+        setParameterValueNotifyingHost(`root`, normalize(root, NOTES_COUNT));
+    }
     if (paramsToUpdate.includes('tonics')) {
         setParameterValueNotifyingHost(`tonics`, normalize(tonics - minTonics, maxTonics - minTonics + 1));
     }
     if (paramsToUpdate.includes('index')) {
-        setParameterValueNotifyingHost(`index`, normalize(index, maxIndex));
+        setParameterValueNotifyingHost(`index`, normalize(index, maxIndex + 1));
     }
     if (paramsToUpdate.includes('mode')) {
-        setParameterValueNotifyingHost(`mode`, normalize(mode, maxMode));
+        setParameterValueNotifyingHost(`mode`, normalize(mode, maxMode + 1));
     }
     if (paramsToUpdate.includes('tonics') || paramsToUpdate.includes('index') || paramsToUpdate.includes('mode')) {
         const { intervals } = selectCurrent(state);
         intervals.forEach((val, i) => {
             setParameterValueNotifyingHost(`interval${i}`, normalize(val - 1, NOTES_COUNT));
         });
-    }
-    if (paramsToUpdate.includes('enabled')) {
-        setParameterValueNotifyingHost('transformEnabled', enabled);
-    }
-    if (paramsToUpdate.includes('root')) {
-        setParameterValueNotifyingHost(`root`, normalize(root, NOTES_COUNT));
     }
 
     prevState = state;
