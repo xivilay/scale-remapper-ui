@@ -4,7 +4,10 @@
     "private": true,
     "dependencies": {
         "react": "^16.13.1",
-        "react-juce": "^0.2.16"
+        "react-dom": "16.13.1",
+        "react-juce": "^0.2.16",
+        "react-redux": "^7.2.6",
+        "reselect": "^4.1.5"
     },
     "devDependencies": {
         "@babel/core": "^7.16.0",
@@ -16,6 +19,7 @@
         "babel-loader": "^8.2.3",
         "eslint": "^7.32.0",
         "eslint-plugin-react": "^7.27.0",
+        "prop-types": "^15.7.2",
         "svg-inline-loader": "^0.8.0",
         "url-loader": "^4.1.1",
         "webpack": "^4.27.1",

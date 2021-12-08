@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import { Provider } from 'react-redux';
 import { View } from 'react-juce';
-import Scales from './Scales';
+import Scales from './Container';
+import store from '../store/parameters';
 
 class App extends Component {
     constructor(props) {
@@ -11,7 +13,9 @@ class App extends Component {
         return (
             <View {...styles.container}>
                 <View {...styles.content}>
-                    <Scales />
+                    <Provider store={store}>
+                        <Scales />
+                    </Provider>
                 </View>
             </View>
         );

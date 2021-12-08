@@ -1,136 +1,8 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { EventBridge, Text, Button, ListView, View } from 'react-juce';
-import { setParameterValueNotifyingHost } from '../natives';
-import {
-    getNamesList,
-    getScaleByName,
-    getScale,
-    getScaleByIntervals,
-    getModesCount,
-    getScalesCount,
-} from '../theory/scales/scale-db';
-
-const BASE_SCALE_NAME = 'Ionian';
-
-const notesCount = 12;
-const minTones = 3;
-const maxTones = 12;
-
-const normalize = (int, range) => {
-    if (range === 1) return int === 0 ? 0 : 1;
-    return int / (range - 1);
-};
-const denormalize = (float, range) => Math.round(float * (range - 1));
+import { Text, Button, ListView, View } from 'react-juce';
 
 class Scales extends Component {
-    constructor(props) {
-        super(props);
-
-        this._onParameterValueChange = this._onParameterValueChange.bind(this);
-        this._changeScale = this._changeScale.bind(this);
-
-        this.state = {
-            enabled: 'On',
-            root: 0,
-            currentScale: getScaleByName(BASE_SCALE_NAME),
-        };
-    }
-
-    componentDidMount() {
-        EventBridge.addListener('parameterValueChange', this._onParameterValueChange);
-    }
-
-    componentWillUnmount() {
-        EventBridge.removeListener('parameterValueChange', this._onParameterValueChange);
-    }
-
-    _onParameterValueChange(index, changedParamId, defaultValue, currentValue, stringValue) {
-        if (changedParamId === 'transformEnabled') {
-            this.setState({ enabled: stringValue });
-        }
-        if (changedParamId === 'root') {
-            this.setState({ root: parseInt(stringValue) });
-        }
-        if (changedParamId === 'index') {
-            this.setState((prevState) => {
-                const tonicsCount = prevState.currentScale?.tones;
-                const nextIndex = denormalize(currentValue, getScalesCount(tonicsCount, notesCount));
-                const prevIndex = prevState.currentScale?.baseIndex;
-                if (prevIndex !== nextIndex) {
-                    this._changeScale({ index: nextIndex });
-                }
-            });
-        }
-        if (changedParamId === 'mode') {
-            this.setState((prevState) => {
-                const prevMode = prevState.currentScale?.shift;
-                const tonicsCount = prevState.currentScale?.tones;
-                const modesCount = getModesCount(tonicsCount, prevMode, notesCount);
-                const nextMode = denormalize(currentValue, modesCount);
-                if (prevMode !== nextMode) {
-                    this._changeScale({ mode: nextMode });
-                }
-            });
-        }
-        if (changedParamId === 'tonics') {
-            this.setState((prevState) => {
-                const prevTonics = prevState.currentScale?.tones;
-                const nextTonics = parseInt(stringValue);
-                if (prevTonics != nextTonics) {
-                    this._changeScale({ tonics: nextTonics });
-                }
-            });
-        }
-    }
-
-    _changeScale({ name, intervals, index, mode, tonics }) {
-        this.setState((prevState) => {
-            const tonicsCount = prevState.currentScale?.tones;
-            let scale;
-            if (name) {
-                scale = getScaleByName(name, tonicsCount);
-            } else if (intervals) {
-                scale = getScaleByIntervals(intervals);
-            } else if (tonics) {
-                scale = getScale(tonics, 0, 0, notesCount);
-            } else {
-                const prevIndex = prevState.currentScale?.baseIndex;
-                const prevMode = prevState.currentScale?.shift;
-                if (index == undefined) index = prevIndex;
-                if (mode == undefined) mode = prevMode;
-                const modesCount = getModesCount(tonicsCount, index, notesCount);
-                if (mode >= modesCount) mode = 0;
-                scale = getScale(tonicsCount, index, mode, notesCount);
-            }
-            if (!scale) return;
-            this._changeHostParams(scale, prevState.currentScale);
-            return { currentScale: scale };
-        });
-    }
-
-    _changeHostParams(scale, prevScale) {
-        const keysCount = notesCount;
-        if (scale.baseIndex !== prevScale?.baseIndex) {
-            setParameterValueNotifyingHost(
-                `index`,
-                normalize(scale.baseIndex, getScalesCount(scale.tones, notesCount))
-            );
-        }
-        if (scale.shift !== prevScale?.shift) {
-            setParameterValueNotifyingHost(
-                `mode`,
-                normalize(scale.shift, getModesCount(scale.tones, scale.shift, notesCount))
-            );
-        }
-        if (scale.tones !== prevScale?.tones) {
-            setParameterValueNotifyingHost(`tonics`, normalize(scale.tones - minTones, maxTones - minTones + 1));
-        }
-
-        scale.intervals.forEach((val, i) => {
-            setParameterValueNotifyingHost(`interval${i}`, normalize(val - 1, keysCount));
-        });
-    }
-
     renderClickableItem(text, color, callback) {
         return (
             <Button {...styles.button} onClick={callback}>
@@ -142,14 +14,11 @@ class Scales extends Component {
     }
 
     renderToggle() {
-        const stateText = this.state.enabled;
-        const isOn = stateText === 'On';
-        const callback = () => {
-            setParameterValueNotifyingHost('transformEnabled', !isOn);
-        };
-        const color = isOn ? colors.textActive : colors.textInactive;
+        const { enabled, toggleEnabled } = this.props;
+        const stateText = enabled ? 'On' : 'Off';
+        const color = enabled ? colors.textActive : colors.textInactive;
         return (
-            <Button {...styles.button} onClick={callback}>
+            <Button {...styles.button} onClick={toggleEnabled}>
                 <Text {...styles.text} color={color}>
                     {stateText}
                 </Text>
@@ -158,29 +27,22 @@ class Scales extends Component {
     }
 
     renderBrowser() {
-        const currentName = this.state.currentScale?.name;
-        const tonicsCount = this.state.currentScale?.tones;
-        const namesList = getNamesList(tonicsCount).sort((a, b) => {
-            const getIndex = (a) => parseInt(a.substring(0, a.indexOf(':')));
-            return getIndex(a) - getIndex(b);
-        });
-        const currentIndex = namesList.indexOf(currentName);
+        const { names, current, selectName } = this.props;
+        const currentIndex = names.indexOf(current.name);
         // hack list view incorrectly renders items height
-        const scrollableList = namesList.length > 12 ? styles.scrollableList : {};
+        const scrollableList = names.length > 12 ? styles.scrollableList : {};
         return (
             <View {...styles.listContainer}>
                 <View {...styles.headingContainer}>
-                    <Text {...styles.text}>{`Browser (${currentIndex + 1} of ${namesList.length})`}</Text>
+                    <Text {...styles.text}>{`Browser (${currentIndex + 1} of ${names.length})`}</Text>
                 </View>
                 <ListView
                     {...styles.list}
                     {...scrollableList}
-                    data={namesList}
-                    renderItem={(item) => {
-                        const color = item === currentName ? colors.textActive : colors.text;
-                        return this.renderClickableItem(item, color, () => {
-                            this._changeScale({ name: item });
-                        });
+                    data={names}
+                    renderItem={(name) => {
+                        const color = name === current.name ? colors.textActive : colors.text;
+                        return this.renderClickableItem(name, color, () => selectName(name));
                     }}
                 />
             </View>
@@ -188,75 +50,58 @@ class Scales extends Component {
     }
 
     renderModes() {
-        const { currentScale } = this.state;
-        const currentIndex = currentScale?.baseIndex;
-        const tonicsCount = currentScale?.tones;
-        const scalesCount = getScalesCount(tonicsCount, notesCount);
-        const modesCount = getModesCount(tonicsCount, currentIndex, notesCount);
-        const currentModeIndex = currentScale?.shift;
-        const getHandler = (index, count, property, forward) => () => {
-            let next = forward ? index + 1 : index - 1;
-            const overLimit = forward ? next > count - 1 : next < 0;
-            if (overLimit) next = forward ? 0 : count - 1;
-            this._changeScale({ [property]: next });
-        };
+        const { current, indexes, modes, siblings, nextMode, prevMode, nextIndex, prevIndex, selectIntervals } =
+            this.props;
+        const [currentIndex, maxIndex] = indexes;
+        const [currentModeIndex, maxMode] = modes;
         return (
-            currentScale && (
-                <View {...styles.listContainer}>
-                    <View {...styles.headingContainer}>
-                        <View {...styles.headingSubContainer}>
-                            <Text {...styles.text}>Scale:</Text>
-                            <View>
-                                <Button onClick={getHandler(currentIndex, scalesCount, 'index', false)}>
-                                    <Text {...styles.text}>{'<'}</Text>
-                                </Button>
-                                <Text {...styles.text}>{`${currentIndex + 1} of ${scalesCount}`}</Text>
-                                <Button onClick={getHandler(currentIndex, scalesCount, 'index', true)}>
-                                    <Text {...styles.text}>{'>'}</Text>
-                                </Button>
-                            </View>
-                        </View>
-                        <View {...styles.headingSubContainer}>
-                            <Text {...styles.text}>{`Mode: `}</Text>
-                            <View>
-                                <Button onClick={getHandler(currentModeIndex, modesCount, 'mode', false)}>
-                                    <Text {...styles.text}>{'<'}</Text>
-                                </Button>
-                                <Text {...styles.text}>{`${+currentModeIndex + 1} of ${modesCount}`}</Text>
-                                <Button onClick={getHandler(currentModeIndex, modesCount, 'mode', true)}>
-                                    <Text {...styles.text}>{'>'}</Text>
-                                </Button>
-                            </View>
+            <View {...styles.listContainer}>
+                <View {...styles.headingContainer}>
+                    <View {...styles.headingSubContainer}>
+                        <Text {...styles.text}>Scale:</Text>
+                        <View>
+                            <Button onClick={prevIndex}>
+                                <Text {...styles.text}>{'<'}</Text>
+                            </Button>
+                            <Text {...styles.text}>{`${currentIndex + 1} of ${maxIndex + 1}`}</Text>
+                            <Button onClick={nextIndex}>
+                                <Text {...styles.text}>{'>'}</Text>
+                            </Button>
                         </View>
                     </View>
-                    <ListView
-                        {...styles.list}
-                        data={currentScale.generateIntervals()}
-                        renderItem={(intervals) => {
-                            const scale = getScaleByIntervals(intervals);
-                            const id = scale.intervals.join(' ');
-                            const currentId = currentScale.intervals.join(' ');
-                            const name = scale.name || 'Unknown';
-                            let color = colors.text;
-                            if (id === currentId) {
-                                color = colors.textActive;
-                            } else if (name === 'Unknown') {
-                                color = colors.textInactive;
-                            }
-                            return this.renderClickableItem(name, color, () => {
-                                this._changeScale({ name: scale.name, intervals });
-                            });
-                        }}
-                    />
+                    <View {...styles.headingSubContainer}>
+                        <Text {...styles.text}>{`Mode: `}</Text>
+                        <View>
+                            <Button onClick={prevMode}>
+                                <Text {...styles.text}>{'<'}</Text>
+                            </Button>
+                            <Text {...styles.text}>{`${+currentModeIndex + 1} of ${maxMode + 1}`}</Text>
+                            <Button onClick={nextMode}>
+                                <Text {...styles.text}>{'>'}</Text>
+                            </Button>
+                        </View>
+                    </View>
                 </View>
-            )
+                <ListView
+                    {...styles.list}
+                    data={siblings}
+                    renderItem={({ name, id, intervals }) => {
+                        let color = colors.text;
+                        if (id === current.id) {
+                            color = colors.textActive;
+                        } else if (name === 'Unknown') {
+                            color = colors.textInactive;
+                        }
+                        return this.renderClickableItem(name, color, () => selectIntervals(intervals));
+                    }}
+                />
+            </View>
         );
     }
 
     renderInfo() {
-        const { currentScale } = this.state;
-        if (!currentScale) return;
-        const info = [`Name: ${currentScale.name}`, `Intervals: ${currentScale.intervals.join(' ')}`];
+        const { current } = this.props;
+        const info = [`Name: ${current.name}`, `Intervals: ${current.id}`];
 
         return (
             <View {...styles.list} height={60} width={'100%'} flexDirection="column">
@@ -281,34 +126,17 @@ class Scales extends Component {
             9: 'Nona',
             10: 'Deca',
         };
-        const { currentScale } = this.state;
-        const tonics = currentScale.tones;
-        const getNextTonics = (forward, tonics) => {
-            let next = forward ? tonics + 1 : tonics - 1;
-            const overflowCondition = forward ? next > maxTones : next < minTones;
-            if (overflowCondition) {
-                next = forward ? minTones : maxTones;
-            }
-            return next;
-        };
+        const { tonics, nextTonics, prevTonics } = this.props;
         const tonicsPostfix = tonicsMap[tonics] ? `(${tonicsMap[tonics]}tonic)` : '';
         return (
             <View {...styles.headingSubContainer}>
                 <Text {...styles.text}>Tones: </Text>
                 <View>
-                    <Button
-                        onClick={() => {
-                            this._changeScale({ tonics: getNextTonics(false, tonics) });
-                        }}
-                    >
+                    <Button onClick={prevTonics}>
                         <Text {...styles.text}>{'<'}</Text>
                     </Button>
                     <Text {...styles.text}>{`${tonics} `}</Text>
-                    <Button
-                        onClick={() => {
-                            this._changeScale({ tonics: getNextTonics(true, tonics) });
-                        }}
-                    >
+                    <Button onClick={nextTonics}>
                         <Text {...styles.text}>{'>'}</Text>
                     </Button>
                     <Text {...styles.text}>{`${tonicsPostfix}`}</Text>
@@ -318,32 +146,18 @@ class Scales extends Component {
     }
 
     renderRoot() {
+        const { root, nextRoot, prevRoot } = this.props;
         const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-        const min = 0;
-        const max = notes.length - 1;
-        const root = this.state.root || 0;
-        const rootNote= notes[root];
-
-        const next = () => {
-            let nextRoot = root + 1;
-            if (nextRoot > max) nextRoot = min;
-            setParameterValueNotifyingHost(`root`, normalize(nextRoot, notes.length));
-        }
-        const prev = () => {
-            let nextRoot = root - 1;
-            if (nextRoot < min) nextRoot = max;
-            setParameterValueNotifyingHost(`root`, normalize(nextRoot, notes.length));
-        }
-
+        const rootNote = notes[root];
         return (
             <View {...styles.headingSubContainer}>
                 <Text {...styles.text}>Root: </Text>
                 <View>
-                    <Button onClick={prev}>
+                    <Button onClick={prevRoot}>
                         <Text {...styles.text}>{'<'}</Text>
                     </Button>
                     <Text {...styles.text}>{`${rootNote}`}</Text>
-                    <Button onClick={next}>
+                    <Button onClick={nextRoot}>
                         <Text {...styles.text}>{'>'}</Text>
                     </Button>
                 </View>
@@ -352,8 +166,6 @@ class Scales extends Component {
     }
 
     render() {
-        const { currentScale } = this.state;
-        if (!currentScale) return null;
         return (
             <>
                 {this.renderRoot()}
@@ -416,6 +228,38 @@ const styles = {
     button: {
         height: 50,
     },
+};
+
+Scales.propTypes = {
+    enabled: PropTypes.bool.isRequired,
+    root: PropTypes.number.isRequired,
+    modes: PropTypes.array.isRequired,
+    indexes: PropTypes.array.isRequired,
+    tonics: PropTypes.number.isRequired,
+    names: PropTypes.arrayOf(PropTypes.string.isRequired),
+    current: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        id: PropTypes.string.isRequired,
+        intervals: PropTypes.arrayOf(PropTypes.number.isRequired),
+    }),
+    siblings: PropTypes.arrayOf(
+        PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            id: PropTypes.string.isRequired,
+            intervals: PropTypes.arrayOf(PropTypes.number.isRequired),
+        })
+    ),
+    toggleEnabled: PropTypes.func.isRequired,
+    nextRoot: PropTypes.func.isRequired,
+    prevRoot: PropTypes.func.isRequired,
+    nextIndex: PropTypes.func.isRequired,
+    prevIndex: PropTypes.func.isRequired,
+    nextMode: PropTypes.func.isRequired,
+    prevMode: PropTypes.func.isRequired,
+    nextTonics: PropTypes.func.isRequired,
+    prevTonics: PropTypes.func.isRequired,
+    selectName: PropTypes.func.isRequired,
+    selectIntervals: PropTypes.func.isRequired,
 };
 
 export default Scales;
