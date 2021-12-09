@@ -10,13 +10,20 @@ const normalize = (int, range) => {
 };
 
 const NOTES_COUNT = 12;
+const PARAMS_COUNT = 5
 
 const defaultState = { tonics: 7, index: 0, mode: 5, root: 0, enabled: true };
 const store = createStore(reducer, defaultState);
 
 const { dispatch, subscribe } = store;
 
+let restoredParams = new Set();
+const isRestored = () => restoredParams.size >= PARAMS_COUNT;
+
 const parameterValueChangeHandler = (index, changedParamId, defaultValue, currentValue) => {
+    if (!isRestored()) {
+        restoredParams.add(changedParamId);
+    }
     switch (changedParamId) {
         case 'transformEnabled':
             return dispatch({ type: 'enabled/set', value: !!currentValue });
@@ -32,16 +39,20 @@ const parameterValueChangeHandler = (index, changedParamId, defaultValue, curren
 };
 
 EventBridge.addListener('parameterValueChange', parameterValueChangeHandler);
-// EventBridge.removeListener('parameterValueChange', parameterValueChangeHandler);
 
 let prevState;
 subscribe(() => {
+    if (!isRestored()) {
+        return;
+    }
+
     const state = store.getState();
     const [tonics, maxTonics, minTonics] = selectTonics(state);
     const [index, maxIndex] = selectIndexes(state);
     const [mode, maxMode] = selectModes(state);
     const { enabled, root } = state;
     const paramsToUpdate = [];
+
     if (prevState) {
         const prevTonics = selectTonics(prevState)[0];
         const prevIndex = selectIndexes(prevState)[0];
@@ -56,7 +67,7 @@ subscribe(() => {
     } else {
         paramsToUpdate.push(...[`index`, `mode`, `tonics`, `enabled`, `root`]);
     }
-
+    
     if (paramsToUpdate.includes('enabled')) {
         setParameterValueNotifyingHost('transformEnabled', enabled);
     }
