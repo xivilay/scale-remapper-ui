@@ -1,21 +1,35 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
-import { View } from 'react-juce';
+import { Text, View } from 'react-juce';
 import Scales from './Container';
-import store from '../store/parameters';
+import createParametersStore from '../store/parameters';
 
 class App extends Component {
     constructor(props) {
         super(props);
+        this.state = { store: null };
+    }
+
+    async componentDidMount() {
+        const store = await createParametersStore();
+        this.setState({ store });
+    }
+
+    renderSpinner() {
+        return <Text {...styles.loading}>Loading...</Text>;
     }
 
     render() {
+        const { store } = this.state;
         return (
             <View {...styles.container}>
                 <View {...styles.content}>
-                    <Provider store={store}>
-                        <Scales />
-                    </Provider>
+                    {(store && (
+                        <Provider store={store}>
+                            <Scales />
+                        </Provider>
+                    )) ||
+                        this.renderSpinner()}
                 </View>
             </View>
         );
@@ -39,6 +53,10 @@ const styles = {
         alignItems: 'flex-start',
         alignContent: 'flex-start',
     },
+    loading: {
+        fontSize: 50,
+        color: '#dddddd'
+    }
 };
 
 export default App;

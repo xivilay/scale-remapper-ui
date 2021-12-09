@@ -4,26 +4,64 @@ import { EventBridge } from 'react-juce';
 import { setParameterValueNotifyingHost } from '../natives';
 import { selectTonics, selectIndexes, selectModes, selectCurrent } from '../store/selectors';
 
-const normalize = (int, range) => {
-    if (range === 1) return int === 0 ? 0 : 1;
-    return int / (range - 1);
+const NOTES_COUNT = 12;
+
+const getStoreUpdateHandler = (store) => {
+    let prevState;
+    return () => {
+        const normalize = (int, range) => {
+            if (range === 1) return int === 0 ? 0 : 1;
+            return int / (range - 1);
+        };
+        const state = store.getState();
+        const [tonics, maxTonics, minTonics] = selectTonics(state);
+        const [index, maxIndex] = selectIndexes(state);
+        const [mode, maxMode] = selectModes(state);
+        const { enabled, root } = state;
+        const paramsToUpdate = [];
+
+        if (prevState) {
+            const prevTonics = selectTonics(prevState)[0];
+            const prevIndex = selectIndexes(prevState)[0];
+            const prevMode = selectModes(prevState)[0];
+            const prevEnabled = prevState.enabled;
+            const prevRoot = prevState.root;
+            if (prevTonics !== tonics) paramsToUpdate.push('tonics');
+            if (prevIndex !== index) paramsToUpdate.push('index');
+            if (prevMode !== mode) paramsToUpdate.push('mode');
+            if (prevEnabled !== enabled) paramsToUpdate.push('enabled');
+            if (prevRoot !== root) paramsToUpdate.push('root');
+        } else {
+            paramsToUpdate.push(...[`index`, `mode`, `tonics`, `enabled`, `root`]);
+        }
+
+        if (paramsToUpdate.includes('enabled')) {
+            setParameterValueNotifyingHost('transformEnabled', enabled);
+        }
+        if (paramsToUpdate.includes('root')) {
+            setParameterValueNotifyingHost(`root`, normalize(root, NOTES_COUNT));
+        }
+        if (paramsToUpdate.includes('tonics')) {
+            setParameterValueNotifyingHost(`tonics`, normalize(tonics - minTonics, maxTonics - minTonics + 1));
+        }
+        if (paramsToUpdate.includes('index')) {
+            setParameterValueNotifyingHost(`index`, normalize(index, maxIndex + 1));
+        }
+        if (paramsToUpdate.includes('mode')) {
+            setParameterValueNotifyingHost(`mode`, normalize(mode, maxMode + 1));
+        }
+        if (paramsToUpdate.includes('tonics') || paramsToUpdate.includes('index') || paramsToUpdate.includes('mode')) {
+            const { intervals } = selectCurrent(state);
+            intervals.forEach((val, i) => {
+                setParameterValueNotifyingHost(`interval${i}`, normalize(val - 1, NOTES_COUNT));
+            });
+        }
+
+        prevState = state;
+    };
 };
 
-const NOTES_COUNT = 12;
-const PARAMS_COUNT = 5
-
-const defaultState = { tonics: 7, index: 0, mode: 5, root: 0, enabled: true };
-const store = createStore(reducer, defaultState);
-
-const { dispatch, subscribe } = store;
-
-let restoredParams = new Set();
-const isRestored = () => restoredParams.size >= PARAMS_COUNT;
-
-const parameterValueChangeHandler = (index, changedParamId, defaultValue, currentValue) => {
-    if (!isRestored()) {
-        restoredParams.add(changedParamId);
-    }
+const getParameterValueChangeHandler = (dispatch) => (index, changedParamId, defaultValue, currentValue) => {
     switch (changedParamId) {
         case 'transformEnabled':
             return dispatch({ type: 'enabled/set', value: !!currentValue });
@@ -38,59 +76,61 @@ const parameterValueChangeHandler = (index, changedParamId, defaultValue, curren
     }
 };
 
-EventBridge.addListener('parameterValueChange', parameterValueChangeHandler);
+const retrieveInitialParameters = () => {
+    const expectedParams = ['tonics', 'index', 'mode', 'root', 'transformEnabled'];
+    let restoredParams = {};
+    const isRestored = () => expectedParams.every((key) => Object.keys(restoredParams).includes(key));
 
-let prevState;
-subscribe(() => {
-    if (!isRestored()) {
-        return;
-    }
+    return new Promise((resolve) => {
+        const setupInitialParameters = (index, changedParamId, defaultValue, currentValue) => {
+            if (isRestored()) {
+                EventBridge.removeListener('parameterValueChange', setupInitialParameters);
+                resolve(restoredParams);
+            } else {
+                restoredParams[changedParamId] = currentValue;
+            }
+        };
+        EventBridge.addListener('parameterValueChange', setupInitialParameters);
+    });
+};
 
-    const state = store.getState();
-    const [tonics, maxTonics, minTonics] = selectTonics(state);
-    const [index, maxIndex] = selectIndexes(state);
-    const [mode, maxMode] = selectModes(state);
-    const { enabled, root } = state;
-    const paramsToUpdate = [];
+const getInitialStateFromRaw = (rawState) => {
+    const denormalize = (float, range) => Math.round(float * range);
+    const { tonics, index, mode, root, transformEnabled } = rawState;
 
-    if (prevState) {
-        const prevTonics = selectTonics(prevState)[0];
-        const prevIndex = selectIndexes(prevState)[0];
-        const prevMode = selectModes(prevState)[0];
-        const prevEnabled = prevState.enabled;
-        const prevRoot = prevState.root;
-        if (prevTonics !== tonics) paramsToUpdate.push('tonics');
-        if (prevIndex !== index) paramsToUpdate.push('index');
-        if (prevMode !== mode) paramsToUpdate.push('mode');
-        if (prevEnabled !== enabled) paramsToUpdate.push('enabled');
-        if (prevRoot !== root) paramsToUpdate.push('root');
-    } else {
-        paramsToUpdate.push(...[`index`, `mode`, `tonics`, `enabled`, `root`]);
-    }
-    
-    if (paramsToUpdate.includes('enabled')) {
-        setParameterValueNotifyingHost('transformEnabled', enabled);
-    }
-    if (paramsToUpdate.includes('root')) {
-        setParameterValueNotifyingHost(`root`, normalize(root, NOTES_COUNT));
-    }
-    if (paramsToUpdate.includes('tonics')) {
-        setParameterValueNotifyingHost(`tonics`, normalize(tonics - minTonics, maxTonics - minTonics + 1));
-    }
-    if (paramsToUpdate.includes('index')) {
-        setParameterValueNotifyingHost(`index`, normalize(index, maxIndex + 1));
-    }
-    if (paramsToUpdate.includes('mode')) {
-        setParameterValueNotifyingHost(`mode`, normalize(mode, maxMode + 1));
-    }
-    if (paramsToUpdate.includes('tonics') || paramsToUpdate.includes('index') || paramsToUpdate.includes('mode')) {
-        const { intervals } = selectCurrent(state);
-        intervals.forEach((val, i) => {
-            setParameterValueNotifyingHost(`interval${i}`, normalize(val - 1, NOTES_COUNT));
-        });
-    }
+    const nextRoot = denormalize(root, NOTES_COUNT - 1);
+    let nextState = { enabled: transformEnabled, root: nextRoot };
 
-    prevState = state;
-});
+    const [, maxTonics, minTonics] = selectTonics(nextState);
+    let nextTonics = denormalize(tonics, maxTonics - minTonics) + minTonics;
+    nextState = { ...nextState, tonics: nextTonics };
 
-export default store;
+    const [, maxIndex] = selectIndexes(nextState);
+    let nextIndex = denormalize(index, maxIndex);
+    nextState = { ...nextState, index: nextIndex };
+
+    const [, maxMode] = selectModes(nextState);
+    let nextMode = denormalize(mode, maxMode);
+    nextState = { ...nextState, mode: nextMode };
+
+    return nextState;
+};
+
+const createParametersStore = async () => {
+    const restoredRawParams = await retrieveInitialParameters();
+
+    const defaultState = getInitialStateFromRaw(restoredRawParams);
+    const store = createStore(reducer, defaultState);
+
+    const { dispatch, subscribe } = store;
+
+    const storeUpdateHandler = getStoreUpdateHandler(store);
+    const parameterValueChangeHandler = getParameterValueChangeHandler(dispatch);
+
+    subscribe(storeUpdateHandler);
+    EventBridge.addListener('parameterValueChange', parameterValueChangeHandler);
+
+    return store;
+};
+
+export default createParametersStore;
