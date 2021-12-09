@@ -82,10 +82,12 @@ export default (state, action) => {
             return reduceTonics(state, true);
         }
         case 'tonics/prev': {
-            return reduceTonics(state, false);
+            const nextState = reduceTonics(state, false);
+            return { ...nextState, index: 0, mode: 0 };
         }
         case 'tonics/set': {
-            return reduceTonics(state, null, action.rawValue);
+            const nextState = reduceTonics(state, null, action.rawValue);
+            return { ...nextState, index: 0, mode: 0 };
         }
         case 'mode/next': {
             const [mode, maxMode] = selectModes(state);
