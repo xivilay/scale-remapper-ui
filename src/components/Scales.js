@@ -116,6 +116,7 @@ class Scales extends Component {
 
     renderTones() {
         const tonicsMap = {
+            1: 'Mono',
             2: 'Dia',
             3: 'Tri',
             4: 'Tetra',

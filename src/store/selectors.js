@@ -2,8 +2,8 @@ import { createSelector } from 'reselect';
 import { getNamesList, getScale, getScaleByIntervals, getModesCount, getScalesCount } from '../theory/scales/scale-db';
 
 const NOTES_COUNT = 12;
-const minTonics = 3;
-const maxTonics = 12;
+const minTonics = 1;
+const maxTonics = NOTES_COUNT;
 
 const getTonics = (store) => store.tonics;
 const getIndex = (store) => store.index;
