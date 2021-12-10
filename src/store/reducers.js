@@ -79,7 +79,8 @@ export default (state, action) => {
             return reduceIndex(state, null, action.rawValue);
         }
         case 'tonics/next': {
-            return reduceTonics(state, true);
+            const nextState = reduceTonics(state, true);
+            return { ...nextState, index: 0, mode: 0 };
         }
         case 'tonics/prev': {
             const nextState = reduceTonics(state, false);
@@ -87,6 +88,7 @@ export default (state, action) => {
         }
         case 'tonics/set': {
             const nextState = reduceTonics(state, null, action.rawValue);
+            if (nextState.tonics === state.tonics) return state;
             return { ...nextState, index: 0, mode: 0 };
         }
         case 'mode/next': {
