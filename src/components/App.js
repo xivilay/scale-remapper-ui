@@ -15,21 +15,16 @@ class App extends Component {
         this.setState({ store });
     }
 
-    renderSpinner() {
-        return <Text {...styles.loading}>Loading...</Text>;
-    }
-
     render() {
         const { store } = this.state;
         return (
             <View {...styles.container}>
                 <View {...styles.content}>
-                    {(store && (
+                    {store && (
                         <Provider store={store}>
                             <Scales />
                         </Provider>
-                    )) ||
-                        this.renderSpinner()}
+                    )}
                 </View>
             </View>
         );
@@ -52,10 +47,6 @@ const styles = {
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
         alignContent: 'flex-start',
-    },
-    loading: {
-        fontSize: 50,
-        color: '#dddddd'
     }
 };
 
