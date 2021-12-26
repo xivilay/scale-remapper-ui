@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Text, Button, ListView, View } from 'react-juce';
+import { colors } from '../theme';
 
 class Scales extends Component {
     renderClickableItem(text, color, callback) {
@@ -16,7 +17,7 @@ class Scales extends Component {
     renderToggle() {
         const { enabled, toggleEnabled } = this.props;
         const stateText = enabled ? 'On' : 'Off';
-        const color = enabled ? colors.textActive : colors.textInactive;
+        const color = enabled ? colors.primary : colors.textInactive;
         return (
             <Button {...styles.button} onClick={toggleEnabled}>
                 <Text {...styles.text} color={color}>
@@ -41,7 +42,7 @@ class Scales extends Component {
                     {...scrollableList}
                     data={names}
                     renderItem={(name) => {
-                        const color = name === current.name ? colors.textActive : colors.text;
+                        const color = name === current.name ? colors.primary : colors.text;
                         return this.renderClickableItem(name, color, () => selectName(name));
                     }}
                 />
@@ -88,7 +89,7 @@ class Scales extends Component {
                     renderItem={({ name, id, intervals }) => {
                         let color = colors.text;
                         if (id === current.id) {
-                            color = colors.textActive;
+                            color = colors.primary;
                         } else if (name === 'Unknown') {
                             color = colors.textInactive;
                         }
@@ -186,14 +187,6 @@ class Scales extends Component {
     }
 }
 
-const colors = {
-    outline: '#9196ff',
-    detail: '#ff9000',
-    textActive: '#86c400',
-    textInactive: '#aaaaaa',
-    text: '#dddddd',
-};
-
 const styles = {
     scrollableList: {
         itemHeight: 13, // 4
@@ -201,7 +194,7 @@ const styles = {
     list: {
         height: 250,
         borderWidth: 3,
-        borderColor: colors.outline,
+        borderColor: colors.secondary,
         borderRadius: 3,
         overflowX: 'hidden',
         marginBottom: 5,
@@ -223,7 +216,7 @@ const styles = {
     },
     text: {
         fontSize: 25,
-        color: '#dddddd',
+        color: colors.text,
         marginLeft: 5,
     },
     button: {

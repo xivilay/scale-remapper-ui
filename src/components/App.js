@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
-import { Text, View } from 'react-juce';
+import { View } from 'react-juce';
 import Scales from './Container';
 import createParametersStore from '../store/parameters';
+import { colors } from '../theme';
 
 class App extends Component {
     constructor(props) {
@@ -35,7 +36,7 @@ const styles = {
     container: {
         width: '100%',
         height: '100%',
-        backgroundColor: '#323e44',
+        backgroundColor: colors.background,
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
@@ -47,7 +48,7 @@ const styles = {
         justifyContent: 'flex-start',
         alignItems: 'flex-start',
         alignContent: 'flex-start',
-    }
+    },
 };
 
 export default App;
