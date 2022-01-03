@@ -168,7 +168,10 @@ class Scales extends Component {
         );
     }
 
-    handleDown() {}
+    handleKeyDown(keyIndex) {
+        const { selectKey, current, root } = this.props;
+        selectKey(current.intervals, root, keyIndex);
+    }
 
     render() {
         return (
@@ -185,12 +188,12 @@ class Scales extends Component {
                     </View>
                 </View>
                 {this.renderInfo()}
-                <OctaveKeyboard
+                <OctaveKeyboard 
                     width={250}
                     height={100}
                     root={this.props.root}
                     intervals={this.props.current.intervals}
-                    onKeyDown={(key) => this.handleDown(key)}
+                    onKeyDown={(key) => this.handleKeyDown(key)}
                 />
             </>
         );
@@ -264,6 +267,7 @@ Scales.propTypes = {
     prevTonics: PropTypes.func.isRequired,
     selectName: PropTypes.func.isRequired,
     selectIntervals: PropTypes.func.isRequired,
+    selectKey: PropTypes.func.isRequired,
 };
 
 export default Scales;

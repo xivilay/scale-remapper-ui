@@ -94,8 +94,6 @@ class OctaveKeyboard extends Component {
         drawKeys(blackKeysEdges, blackKeys, keyColors.black);
     }
 
-    handleDown() {}
-
     getKey(e) {
         const { x, y } = e;
         const whiteKeysEdges = this.getWhiteKeysEdges();
