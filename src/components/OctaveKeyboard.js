@@ -1,13 +1,11 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Canvas, View } from 'react-juce';
-import { colors } from '../theme';
 
-const keyColors = {
-    root: colors.primary,
-    active: '#9196ff',
-    white: '#444444',
-    black: '#333333',
-    border: colors.background,
+const defaultColors = {
+    white: '#edf2f4',
+    black: '#8d99ae',
+    border: '#2b2d42',
 };
 
 const whiteKeys = [0, 2, 4, 5, 7, 9, 11];
@@ -52,29 +50,18 @@ class OctaveKeyboard extends Component {
     }
 
     renderKeyboard(ctx) {
-        const { root, intervals, width, height } = this.props;
+        const { width, height, colors, borderColor, whiteColor, blackColor } = this.props;
 
-        const selected = intervals.reduce((acc, i) => {
-            let last = acc[acc.length - 1];
-            if (last == undefined) last = root;
-            let next = last + parseInt(i);
-            if (next >= totalCount) next = next - totalCount;
-            acc.push(next);
-            return acc;
-        }, []);
-
-        ctx.strokeStyle = keyColors.border;
+        ctx.strokeStyle = borderColor || defaultColors.border;
 
         const whiteKeysEdges = this.getWhiteKeysEdges();
         const blackKeysEdges = this.getBlackKeysEdges();
 
         const drawKeys = (edges, keys, color) => {
             edges.forEach(([x0, y0, x1, y1], i) => {
-                const isRoot = root === keys[i];
-                const isInScale = selected.includes(keys[i]);
                 let fillStyle = color;
-                if (isInScale) fillStyle = keyColors.active;
-                if (isRoot) fillStyle = keyColors.root;
+                const overrideColor = colors?.[keys[i]];
+                if (overrideColor) fillStyle = overrideColor;
 
                 ctx.beginPath();
                 ctx.moveTo(x0, y0);
@@ -90,8 +77,8 @@ class OctaveKeyboard extends Component {
 
         ctx.clearRect(0, 0, width, height);
 
-        drawKeys(whiteKeysEdges, whiteKeys, keyColors.white);
-        drawKeys(blackKeysEdges, blackKeys, keyColors.black);
+        drawKeys(whiteKeysEdges, whiteKeys, whiteColor || defaultColors.white);
+        drawKeys(blackKeysEdges, blackKeys, blackColor || defaultColors.black);
     }
 
     getKey(e) {
@@ -106,7 +93,7 @@ class OctaveKeyboard extends Component {
     }
 
     render() {
-        const { width, height, root, intervals, onKeyDown } = this.props;
+        const { width, height, onKeyDown } = this.props;
         return (
             <View onMouseDown={(e) => onKeyDown(this.getKey(e))}>
                 <Canvas width={width} height={height} animate={true} onDraw={(ctx) => this.renderKeyboard(ctx)} />
@@ -114,5 +101,15 @@ class OctaveKeyboard extends Component {
         );
     }
 }
+
+OctaveKeyboard.propTypes = {
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired,
+    borderColor: PropTypes.string,
+    whiteColor: PropTypes.string,
+    blackColor: PropTypes.string,
+    colors: PropTypes.arrayOf(PropTypes.string),
+    onKeyDown: PropTypes.func.isRequired,
+};
 
 export default OctaveKeyboard;

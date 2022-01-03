@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Text, Button, ListView, View } from 'react-juce';
 import { colors } from '../theme';
-import OctaveKeyboard from './OctaveKeyboard';
+import ScaleKeyboard from './ScaleKeyboard';
 
 class Scales extends Component {
     renderClickableItem(text, color, callback) {
@@ -188,7 +188,7 @@ class Scales extends Component {
                     </View>
                 </View>
                 {this.renderInfo()}
-                <OctaveKeyboard 
+                <ScaleKeyboard 
                     width={250}
                     height={100}
                     root={this.props.root}
