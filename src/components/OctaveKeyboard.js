@@ -49,13 +49,39 @@ class OctaveKeyboard extends Component {
         return blackKeysEdges;
     }
 
+    renderKeyText(ctx, zone, text) {
+        const FONT_SIZE = 16;
+        const FONT = `${FONT_SIZE}px monospace`;
+        const [x0, y0, x1, y1] = zone;
+        const center = [x0 + (x1 - x0) / 2, (y1 - y0) * 0.8];
+        ctx.font = FONT;
+        const height = FONT_SIZE;
+        const width = FONT_SIZE * text.length;
+
+        const [x, y] = center;
+        ctx.beginPath();
+
+        if (this.props.showLabelCircle) {
+            ctx.fillStyle = defaultColors.white;
+            ctx.moveTo(x, y);
+            ctx.arc(x, y, (height / 5) * 3, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        ctx.fillStyle = defaultColors.border;
+        ctx.fillText(text, x - width / 3, y + height / 3);
+        ctx.closePath();
+    }
+
     renderKeyboard(ctx) {
-        const { width, height, colors, borderColor, whiteColor, blackColor } = this.props;
+        const { width, height, colors, borderColor, whiteColor, blackColor, showLabels = true } = this.props;
 
         ctx.strokeStyle = borderColor || defaultColors.border;
 
         const whiteKeysEdges = this.getWhiteKeysEdges();
         const blackKeysEdges = this.getBlackKeysEdges();
+
+        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
         const drawKeys = (edges, keys, color) => {
             edges.forEach(([x0, y0, x1, y1], i) => {
@@ -72,6 +98,9 @@ class OctaveKeyboard extends Component {
                 ctx.fill();
                 ctx.stroke();
                 ctx.closePath();
+                if (showLabels) {
+                    this.renderKeyText(ctx, [x0, y0, x1, y1], notes[keys[i]]);
+                }
             });
         };
 
@@ -94,8 +123,9 @@ class OctaveKeyboard extends Component {
 
     render() {
         const { width, height, onKeyDown } = this.props;
+        const onMouseDown = onKeyDown && ((e) => onKeyDown(this.getKey(e)));
         return (
-            <View onMouseDown={(e) => onKeyDown(this.getKey(e))}>
+            <View onMouseDown={onMouseDown}>
                 <Canvas width={width} height={height} animate={true} onDraw={(ctx) => this.renderKeyboard(ctx)} />
             </View>
         );
@@ -110,6 +140,8 @@ OctaveKeyboard.propTypes = {
     blackColor: PropTypes.string,
     colors: PropTypes.arrayOf(PropTypes.string),
     onKeyDown: PropTypes.func.isRequired,
+    showLabels: PropTypes.bool,
+    showLabelCircle: PropTypes.bool,
 };
 
 export default OctaveKeyboard;

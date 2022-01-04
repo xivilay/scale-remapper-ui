@@ -171,8 +171,7 @@ class Scales extends Component {
     renderKeyboard() {
         return (
             <ScaleKeyboard
-                width={255}
-                height={100}
+                {...styles.keyboard}
                 root={this.props.root}
                 intervals={this.props.current.intervals}
                 onKeyDown={(keyIndex) => {
@@ -241,6 +240,10 @@ const styles = {
     },
     button: {
         height: 50,
+    },
+    keyboard: {
+        width: 255,
+        height: 100,
     },
 };
 
