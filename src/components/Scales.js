@@ -103,7 +103,7 @@ class Scales extends Component {
 
     renderInfo() {
         const { current } = this.props;
-        const info = [`Name: ${current.name}`, `Intervals: ${current.id}`];
+        const info = [`Name: ${current.name || 'Unknown'}`, `Intervals: ${current.id}`];
 
         return (
             <View {...styles.list} height={60} width={'100%'} flexDirection="column">
@@ -168,9 +168,19 @@ class Scales extends Component {
         );
     }
 
-    handleKeyDown(keyIndex) {
-        const { selectKey, current, root } = this.props;
-        selectKey(current.intervals, root, keyIndex);
+    renderKeyboard() {
+        return (
+            <ScaleKeyboard
+                width={255}
+                height={100}
+                root={this.props.root}
+                intervals={this.props.current.intervals}
+                onKeyDown={(keyIndex) => {
+                    const { selectKey, current, root } = this.props;
+                    selectKey(current.intervals, root, keyIndex);
+                }}
+            />
+        );
     }
 
     render() {
@@ -188,13 +198,10 @@ class Scales extends Component {
                     </View>
                 </View>
                 {this.renderInfo()}
-                <ScaleKeyboard 
-                    width={250}
-                    height={100}
-                    root={this.props.root}
-                    intervals={this.props.current.intervals}
-                    onKeyDown={(key) => this.handleKeyDown(key)}
-                />
+                <View>
+                    {this.renderKeyboard()}
+                    {this.renderKeyboard()}
+                </View>
             </>
         );
     }

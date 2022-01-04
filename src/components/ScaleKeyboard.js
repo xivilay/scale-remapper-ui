@@ -21,7 +21,7 @@ class ScaleKeyboard extends Component {
             return acc;
         }, []);
 
-        const keyColors = [...Array(12).keys()].map((i) => {
+        const keyColors = [...Array(KEYS_COUNT).keys()].map((i) => {
             if (root === i) return colors.primary;
             if (selected.includes(i)) return '#9196ff';
         });
