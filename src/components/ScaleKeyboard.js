@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { View } from 'react-juce';
 import { colors } from '../theme';
 import OctaveKeyboard from './OctaveKeyboard';
 
@@ -26,7 +27,7 @@ class ScaleKeyboard extends Component {
             if (selected.includes(i)) return '#9196ff';
         });
 
-        return (
+        const octave = (
             <OctaveKeyboard
                 width={width}
                 height={height}
@@ -36,6 +37,13 @@ class ScaleKeyboard extends Component {
                 blackColor={'#333333'}
                 onKeyDown={onKeyDown}
             />
+        );
+
+        return (
+            <View>
+                {octave}
+                {octave}
+            </View>
         );
     }
 }

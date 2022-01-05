@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Text, Button, ListView, View } from 'react-juce';
 import { colors } from '../theme';
 import ScaleKeyboard from './ScaleKeyboard';
+import RemappedKeyboard from './RemappedKeyboard';
 
 class Scales extends Component {
     renderClickableItem(text, color, callback) {
@@ -138,7 +139,7 @@ class Scales extends Component {
                     <Button onClick={prevTonics}>
                         <Text {...styles.text}>{'<'}</Text>
                     </Button>
-                    <Text {...styles.text}>{`${tonics} `}</Text>
+                    <Text {...styles.text} color={colors.primary}>{`${tonics} `}</Text>
                     <Button onClick={nextTonics}>
                         <Text {...styles.text}>{'>'}</Text>
                     </Button>
@@ -159,7 +160,7 @@ class Scales extends Component {
                     <Button onClick={prevRoot}>
                         <Text {...styles.text}>{'<'}</Text>
                     </Button>
-                    <Text {...styles.text}>{`${rootNote}`}</Text>
+                    <Text {...styles.text} color={colors.primary}>{`${rootNote}`}</Text>
                     <Button onClick={nextRoot}>
                         <Text {...styles.text}>{'>'}</Text>
                     </Button>
@@ -190,6 +191,7 @@ class Scales extends Component {
                     {this.renderTones()}
                     {this.renderToggle()}
                 </View>
+                
                 <View>
                     <View {...styles.headingSubContainer} width="100%">
                         {this.renderBrowser()}
@@ -197,10 +199,14 @@ class Scales extends Component {
                     </View>
                 </View>
                 {this.renderInfo()}
-                <View>
-                    {this.renderKeyboard()}
-                    {this.renderKeyboard()}
-                </View>
+                <Text {...styles.text}>Original:</Text>
+                {this.renderKeyboard()}
+                <Text {...styles.text}>Remapped:</Text>
+                <RemappedKeyboard
+                    {...styles.keyboard}
+                    root={this.props.root}
+                    intervals={this.props.current.intervals}
+                />
             </>
         );
     }

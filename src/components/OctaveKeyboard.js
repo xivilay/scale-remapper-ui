@@ -50,6 +50,7 @@ class OctaveKeyboard extends Component {
     }
 
     renderKeyText(ctx, zone, text) {
+        if (!text) return;
         const FONT_SIZE = 16;
         const FONT = `${FONT_SIZE}px monospace`;
         const [x0, y0, x1, y1] = zone;
@@ -74,7 +75,7 @@ class OctaveKeyboard extends Component {
     }
 
     renderKeyboard(ctx) {
-        const { width, height, colors, borderColor, whiteColor, blackColor, showLabels = true } = this.props;
+        const { width, height, colors, borderColor, whiteColor, blackColor, showLabels = true, customLabels } = this.props;
 
         ctx.strokeStyle = borderColor || defaultColors.border;
 
@@ -99,7 +100,9 @@ class OctaveKeyboard extends Component {
                 ctx.stroke();
                 ctx.closePath();
                 if (showLabels) {
-                    this.renderKeyText(ctx, [x0, y0, x1, y1], notes[keys[i]]);
+                    let labelText = notes[keys[i]];
+                    if (customLabels) labelText = customLabels[keys[i]];
+                    this.renderKeyText(ctx, [x0, y0, x1, y1], labelText);
                 }
             });
         };
@@ -126,7 +129,7 @@ class OctaveKeyboard extends Component {
         const onMouseDown = onKeyDown && ((e) => onKeyDown(this.getKey(e)));
         return (
             <View onMouseDown={onMouseDown}>
-                <Canvas width={width} height={height} animate={true} onDraw={(ctx) => this.renderKeyboard(ctx)} />
+                <Canvas width={width} height={height} animate={false} onDraw={(ctx) => this.renderKeyboard(ctx)} />
             </View>
         );
     }
