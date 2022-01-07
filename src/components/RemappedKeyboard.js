@@ -4,10 +4,9 @@ import { View } from 'react-juce';
 import { colors } from '../theme';
 import OctaveKeyboard from './OctaveKeyboard';
 import { getSelectedKeys } from '../store/utils';
+import { notes, whiteNotes, notesPerOctave } from '../theory/chords/utils';
 
-const KEYS_COUNT = 12;
-const whiteKeys = [0, 2, 4, 5, 7, 9, 11];
-const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const KEYS_COUNT = notesPerOctave;
 
 class ScaleKeyboard extends Component {
     constructor(props) {
@@ -21,8 +20,8 @@ class ScaleKeyboard extends Component {
         const indexes = [...Array(KEYS_COUNT * 2).keys()].map((i) => {
             const f = Math.floor(i / KEYS_COUNT);
             i = i % KEYS_COUNT;
-            if (!whiteKeys.includes(i)) return;
-            return (whiteKeys.indexOf(i) + f * whiteKeys.length) % selected.length;
+            if (!whiteNotes.includes(i)) return;
+            return (whiteNotes.indexOf(i) + f * whiteNotes.length) % selected.length;
         })
 
         const labels = indexes.map((i) => notes[selected[i]]);

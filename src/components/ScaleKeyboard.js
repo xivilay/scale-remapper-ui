@@ -4,8 +4,9 @@ import { View } from 'react-juce';
 import { colors } from '../theme';
 import OctaveKeyboard from './OctaveKeyboard';
 import { getSelectedKeys } from '../store/utils';
+import { notesPerOctave } from '../theory/chords/utils';
 
-const KEYS_COUNT = 12;
+const KEYS_COUNT = notesPerOctave;
 
 class ScaleKeyboard extends Component {
     constructor(props) {

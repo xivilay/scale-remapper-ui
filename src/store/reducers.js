@@ -1,7 +1,8 @@
 import { selectTonics, selectIndexes, selectModes } from '../store/selectors';
 import { getScaleByName, getScaleByIntervals } from '../theory/scales/scale-db';
+import { notesPerOctave } from '../theory/chords/utils';
 
-const NOTES_COUNT = 12;
+const NOTES_COUNT = notesPerOctave;
 
 const denormalize = (float, range) => Math.round(float * range);
 

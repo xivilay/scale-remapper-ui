@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Canvas, View } from 'react-juce';
+import { notes, whiteNotes, blackNotes, notesPerOctave } from '../theory/chords/utils';
 
 const defaultColors = {
     white: '#edf2f4',
@@ -8,11 +9,8 @@ const defaultColors = {
     border: '#2b2d42',
 };
 
-const whiteKeys = [0, 2, 4, 5, 7, 9, 11];
-const blackKeys = [1, 3, 6, 8, 10];
-const whiteCount = whiteKeys.length;
-const blackCount = blackKeys.length;
-const totalCount = whiteCount + blackCount;
+const whiteCount = whiteNotes.length;
+const totalCount = notesPerOctave;
 
 class OctaveKeyboard extends Component {
     constructor(props) {
@@ -23,7 +21,7 @@ class OctaveKeyboard extends Component {
         const { width: keyboardWidth, height: keyboardHeight } = this.props;
         const width = keyboardWidth / whiteCount;
         const height = keyboardHeight;
-        const whiteKeysEdges = whiteKeys.map((n, i) => {
+        const whiteKeysEdges = whiteNotes.map((n, i) => {
             const x0 = i * width;
             const x1 = x0 + width;
             const y0 = 0;
@@ -35,9 +33,9 @@ class OctaveKeyboard extends Component {
 
     getBlackKeysEdges() {
         const { width: keyboardWidth, height: keyboardHeight } = this.props;
-        const width = keyboardWidth / whiteKeys.length;
+        const width = keyboardWidth / whiteCount;
         const height = keyboardHeight;
-        const blackKeysEdges = blackKeys.map((val) => {
+        const blackKeysEdges = blackNotes.map((val) => {
             const w = (width * 2) / 3;
             const n = (val * whiteCount) / totalCount;
             const x0 = n * width;
@@ -75,14 +73,21 @@ class OctaveKeyboard extends Component {
     }
 
     renderKeyboard(ctx) {
-        const { width, height, colors, borderColor, whiteColor, blackColor, showLabels = true, customLabels } = this.props;
+        const {
+            width,
+            height,
+            colors,
+            borderColor,
+            whiteColor,
+            blackColor,
+            showLabels = true,
+            customLabels,
+        } = this.props;
 
         ctx.strokeStyle = borderColor || defaultColors.border;
 
         const whiteKeysEdges = this.getWhiteKeysEdges();
         const blackKeysEdges = this.getBlackKeysEdges();
-
-        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
         const drawKeys = (edges, keys, color) => {
             edges.forEach(([x0, y0, x1, y1], i) => {
@@ -109,8 +114,8 @@ class OctaveKeyboard extends Component {
 
         ctx.clearRect(0, 0, width, height);
 
-        drawKeys(whiteKeysEdges, whiteKeys, whiteColor || defaultColors.white);
-        drawKeys(blackKeysEdges, blackKeys, blackColor || defaultColors.black);
+        drawKeys(whiteKeysEdges, whiteNotes, whiteColor || defaultColors.white);
+        drawKeys(blackKeysEdges, blackNotes, blackColor || defaultColors.black);
     }
 
     getKey(e) {
@@ -119,9 +124,9 @@ class OctaveKeyboard extends Component {
         const blackKeysEdges = this.getBlackKeysEdges();
         const isBelong = ([x0, y0, x1, y1]) => x > x0 && x < x1 && y > y0 && y < y1;
         const black = blackKeysEdges.findIndex(isBelong);
-        if (black >= 0) return blackKeys[black];
+        if (black >= 0) return blackNotes[black];
         const white = whiteKeysEdges.findIndex(isBelong);
-        if (white >= 0) return whiteKeys[white];
+        if (white >= 0) return whiteNotes[white];
     }
 
     render() {
@@ -145,6 +150,7 @@ OctaveKeyboard.propTypes = {
     onKeyDown: PropTypes.func.isRequired,
     showLabels: PropTypes.bool,
     showLabelCircle: PropTypes.bool,
+    customLabels: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default OctaveKeyboard;

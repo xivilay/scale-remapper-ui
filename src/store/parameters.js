@@ -3,8 +3,9 @@ import reducer from './reducers';
 import { EventBridge } from 'react-juce';
 import { setParameterValueNotifyingHost } from '../natives';
 import { selectTonics, selectIndexes, selectModes, selectCurrent } from '../store/selectors';
+import { notesPerOctave } from '../theory/chords/utils';
 
-const NOTES_COUNT = 12;
+const NOTES_COUNT = notesPerOctave;
 
 const getStoreUpdateHandler = (store) => {
     let prevState;

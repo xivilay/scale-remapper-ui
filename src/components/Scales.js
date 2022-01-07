@@ -4,6 +4,7 @@ import { Text, Button, ListView, View } from 'react-juce';
 import { colors } from '../theme';
 import ScaleKeyboard from './ScaleKeyboard';
 import RemappedKeyboard from './RemappedKeyboard';
+import { notes } from '../theory/chords/utils';
 
 class Scales extends Component {
     renderClickableItem(text, color, callback) {
@@ -151,7 +152,6 @@ class Scales extends Component {
 
     renderRoot() {
         const { root, nextRoot, prevRoot } = this.props;
-        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
         const rootNote = notes[root];
         return (
             <View {...styles.headingSubContainer}>
@@ -191,7 +191,6 @@ class Scales extends Component {
                     {this.renderTones()}
                     {this.renderToggle()}
                 </View>
-                
                 <View>
                     <View {...styles.headingSubContainer} width="100%">
                         {this.renderBrowser()}

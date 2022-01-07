@@ -1,7 +1,8 @@
 import { createSelector } from 'reselect';
 import { getNamesList, getScale, getScaleByIntervals, getModesCount, getScalesCount } from '../theory/scales/scale-db';
+import { notesPerOctave } from '../theory/chords/utils';
 
-const NOTES_COUNT = 12;
+const NOTES_COUNT = notesPerOctave;
 const minTonics = 1;
 const maxTonics = NOTES_COUNT;
 
