@@ -3,14 +3,7 @@ const KEYS_COUNT = 12;
 // gets next intervals after key was selected/deselected
 export const getNextIntervals = (intervals, root, selectedKey) => {
     if (selectedKey === root) return intervals;
-    let selected = intervals.reduce((acc, i) => {
-        let last = acc[acc.length - 1];
-        if (last == undefined) last = root;
-        let next = last + parseInt(i);
-        if (next >= KEYS_COUNT) next = next - KEYS_COUNT;
-        acc.push(next);
-        return acc;
-    }, []);
+    let selected = getSelectedKeys(intervals, root);
     if (selected.includes(selectedKey)) {
         selected = selected.filter((s) => s !== selectedKey);
     } else {
@@ -25,3 +18,15 @@ export const getNextIntervals = (intervals, root, selectedKey) => {
         return acc;
     }, []);
 };
+
+export const getSelectedKeys = (intervals, root) =>
+    intervals.reduce(
+        (acc, i) => {
+            let last = acc[acc.length - 1];
+            let next = last + parseInt(i);
+            if (next >= KEYS_COUNT) next = next - KEYS_COUNT;
+            if (next !== root) acc.push(next);
+            return acc;
+        },
+        [root]
+    );

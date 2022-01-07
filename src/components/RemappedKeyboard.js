@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { View } from 'react-juce';
 import { colors } from '../theme';
 import OctaveKeyboard from './OctaveKeyboard';
+import { getSelectedKeys } from '../store/utils';
 
 const KEYS_COUNT = 12;
 const whiteKeys = [0, 2, 4, 5, 7, 9, 11];
@@ -15,32 +16,19 @@ class ScaleKeyboard extends Component {
 
     render() {
         const { root, intervals, width, height, onKeyDown } = this.props;
-        const selected = intervals.reduce(
-            (acc, i) => {
-                let last = acc[acc.length - 1];
-                let next = last + parseInt(i);
-                if (next >= KEYS_COUNT) next = next - KEYS_COUNT;
-                if (next !== root) acc.push(next);
-                return acc;
-            },
-            [root]
-        );
+        const selected = getSelectedKeys(intervals, root);
 
-        const labels = [...Array(KEYS_COUNT * 2).keys()].map((i) => {
+        const indexes = [...Array(KEYS_COUNT * 2).keys()].map((i) => {
             const f = Math.floor(i / KEYS_COUNT);
             i = i % KEYS_COUNT;
             if (!whiteKeys.includes(i)) return;
-            const index = (whiteKeys.indexOf(i) + f * whiteKeys.length) % selected.length;
-            return notes[selected[index]];
-        });
+            return (whiteKeys.indexOf(i) + f * whiteKeys.length) % selected.length;
+        })
 
-        const keyColors = [...Array(KEYS_COUNT * 2).keys()].map((i) => {
-            const f = Math.floor(i / KEYS_COUNT);
-            i = i % KEYS_COUNT;
-            if (!whiteKeys.includes(i)) return;
-            const index = (whiteKeys.indexOf(i) + f * whiteKeys.length) % selected.length;
-            if (index === 0) return colors.primary;
-            return '#9196ff';
+        const labels = indexes.map((i) => notes[selected[i]]);
+        const keyColors = indexes.map((i) => {
+            if (i === 0) return colors.primary;
+            if (i) return '#9196ff';
         });
 
         const getOctave = (labels, colors) => (
@@ -58,8 +46,8 @@ class ScaleKeyboard extends Component {
 
         return (
             <View>
-                {getOctave(labels.slice(0, 12), keyColors.slice(0, 12))}
-                {getOctave(labels.slice(12, 24), keyColors.slice(12, 24))}
+                {getOctave(labels.slice(0, KEYS_COUNT), keyColors.slice(0, KEYS_COUNT))}
+                {getOctave(labels.slice(KEYS_COUNT, KEYS_COUNT * 2), keyColors.slice(KEYS_COUNT, KEYS_COUNT * 2))}
             </View>
         );
     }

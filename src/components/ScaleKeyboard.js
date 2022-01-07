@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { View } from 'react-juce';
 import { colors } from '../theme';
 import OctaveKeyboard from './OctaveKeyboard';
+import { getSelectedKeys } from '../store/utils';
 
 const KEYS_COUNT = 12;
 
@@ -13,14 +14,7 @@ class ScaleKeyboard extends Component {
 
     render() {
         const { root, intervals, width, height, onKeyDown } = this.props;
-        const selected = intervals.reduce((acc, i) => {
-            let last = acc[acc.length - 1];
-            if (last == undefined) last = root;
-            let next = last + parseInt(i);
-            if (next >= KEYS_COUNT) next = next - KEYS_COUNT;
-            acc.push(next);
-            return acc;
-        }, []);
+        const selected = getSelectedKeys(intervals, root);
 
         const keyColors = [...Array(KEYS_COUNT).keys()].map((i) => {
             if (root === i) return colors.primary;
