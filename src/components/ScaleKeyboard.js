@@ -19,7 +19,7 @@ class ScaleKeyboard extends Component {
 
         const keyColors = [...Array(KEYS_COUNT).keys()].map((i) => {
             if (root === i) return colors.primary;
-            if (selected.includes(i)) return '#9196ff';
+            if (selected.includes(i)) return colors.secondaryBright;
         });
 
         const octave = (
@@ -28,8 +28,8 @@ class ScaleKeyboard extends Component {
                 height={height}
                 colors={keyColors}
                 borderColor={colors.background}
-                whiteColor={'#444444'}
-                blackColor={'#333333'}
+                whiteColor={colors.white}
+                blackColor={colors.black}
                 onKeyDown={onKeyDown}
             />
         );

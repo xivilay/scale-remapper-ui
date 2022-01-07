@@ -22,23 +22,23 @@ class ScaleKeyboard extends Component {
             i = i % KEYS_COUNT;
             if (!whiteNotes.includes(i)) return;
             return (whiteNotes.indexOf(i) + f * whiteNotes.length) % selected.length;
-        })
+        });
 
         const labels = indexes.map((i) => notes[selected[i]]);
         const keyColors = indexes.map((i) => {
             if (i === 0) return colors.primary;
-            if (i) return '#9196ff';
+            if (i) return colors.secondaryBright;
         });
 
-        const getOctave = (labels, colors) => (
+        const getOctave = (labels, keyColors) => (
             <OctaveKeyboard
                 width={width}
                 height={height}
-                colors={colors}
+                colors={keyColors}
                 customLabels={labels}
                 borderColor={colors.background}
-                whiteColor={'#444444'}
-                blackColor={'#333333'}
+                whiteColor={colors.white}
+                blackColor={colors.black}
                 onKeyDown={onKeyDown}
             />
         );
