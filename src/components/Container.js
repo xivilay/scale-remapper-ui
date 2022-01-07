@@ -9,6 +9,7 @@ import {
     selectCurrent,
     selectSiblings,
 } from '../store/selectors';
+import { getNextIntervals } from '../store/utils';
 
 export const mapStateToProps = (state) => ({
     enabled: state.enabled,
@@ -33,6 +34,7 @@ export const mapDispatchToProps = (dispatch) => {
         prevTonics: () => dispatch({ type: 'tonics/prev' }),
         selectName: (name) => dispatch({ type: 'name/selected', name }),
         selectIntervals: (intervals) => dispatch({ type: 'intervals/selected', intervals }),
+        selectKey: (...args) => dispatch({ type: 'intervals/selected', intervals: getNextIntervals(...args) }),
         toggleEnabled: () => dispatch({ type: 'enabled/toggle' }),
     };
 };

@@ -2,6 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Text, Button, ListView, View } from 'react-juce';
 import { colors } from '../theme';
+import ScaleKeyboard from './ScaleKeyboard';
+import RemappedKeyboard from './RemappedKeyboard';
+import { notes } from '../theory/chords/utils';
 
 class Scales extends Component {
     renderClickableItem(text, color, callback) {
@@ -102,7 +105,7 @@ class Scales extends Component {
 
     renderInfo() {
         const { current } = this.props;
-        const info = [`Name: ${current.name}`, `Intervals: ${current.id}`];
+        const info = [`Name: ${current.name || 'Unknown'}`, `Intervals: ${current.id}`];
 
         return (
             <View {...styles.list} height={60} width={'100%'} flexDirection="column">
@@ -137,7 +140,7 @@ class Scales extends Component {
                     <Button onClick={prevTonics}>
                         <Text {...styles.text}>{'<'}</Text>
                     </Button>
-                    <Text {...styles.text}>{`${tonics} `}</Text>
+                    <Text {...styles.text} color={colors.primary}>{`${tonics} `}</Text>
                     <Button onClick={nextTonics}>
                         <Text {...styles.text}>{'>'}</Text>
                     </Button>
@@ -149,7 +152,6 @@ class Scales extends Component {
 
     renderRoot() {
         const { root, nextRoot, prevRoot } = this.props;
-        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
         const rootNote = notes[root];
         return (
             <View {...styles.headingSubContainer}>
@@ -158,12 +160,26 @@ class Scales extends Component {
                     <Button onClick={prevRoot}>
                         <Text {...styles.text}>{'<'}</Text>
                     </Button>
-                    <Text {...styles.text}>{`${rootNote}`}</Text>
+                    <Text {...styles.text} color={colors.primary}>{`${rootNote}`}</Text>
                     <Button onClick={nextRoot}>
                         <Text {...styles.text}>{'>'}</Text>
                     </Button>
                 </View>
             </View>
+        );
+    }
+
+    renderKeyboard() {
+        return (
+            <ScaleKeyboard
+                {...styles.keyboard}
+                root={this.props.root}
+                intervals={this.props.current.intervals}
+                onKeyDown={(keyIndex) => {
+                    const { selectKey, current, root } = this.props;
+                    selectKey(current.intervals, root, keyIndex);
+                }}
+            />
         );
     }
 
@@ -182,6 +198,14 @@ class Scales extends Component {
                     </View>
                 </View>
                 {this.renderInfo()}
+                <Text {...styles.text}>Original:</Text>
+                {this.renderKeyboard()}
+                <Text {...styles.text}>Remapped:</Text>
+                <RemappedKeyboard
+                    {...styles.keyboard}
+                    root={this.props.root}
+                    intervals={this.props.current.intervals}
+                />
             </>
         );
     }
@@ -222,6 +246,10 @@ const styles = {
     button: {
         height: 50,
     },
+    keyboard: {
+        width: 255,
+        height: 100,
+    },
 };
 
 Scales.propTypes = {
@@ -254,6 +282,7 @@ Scales.propTypes = {
     prevTonics: PropTypes.func.isRequired,
     selectName: PropTypes.func.isRequired,
     selectIntervals: PropTypes.func.isRequired,
+    selectKey: PropTypes.func.isRequired,
 };
 
 export default Scales;
