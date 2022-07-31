@@ -2,7 +2,7 @@ import { createStore } from 'redux';
 import reducer from './reducers';
 import { EventBridge } from 'react-juce';
 import { setParameterValueNotifyingHost } from '../natives';
-import { selectTonics, selectIndexes, selectModes, selectCurrent } from '../store/selectors';
+import { selectTonics, selectIndexes, selectModes, selectCurrent, selectRoot } from '../store/selectors';
 import { notesPerOctave } from '../theory/chords/utils';
 
 const NOTES_COUNT = notesPerOctave;
@@ -18,7 +18,8 @@ const getStoreUpdateHandler = (store) => {
         const [tonics, maxTonics, minTonics] = selectTonics(state);
         const [index, maxIndex] = selectIndexes(state);
         const [mode, maxMode] = selectModes(state);
-        const { enabled, root } = state;
+        const root = selectRoot(state);
+        const { enabled } = state;
         const paramsToUpdate = [];
 
         if (prevState) {
@@ -96,25 +97,9 @@ const retrieveInitialParameters = () => {
 };
 
 const getInitialStateFromRaw = (rawState) => {
-    const denormalize = (float, range) => Math.round(float * range);
     const { tonics, index, mode, root, transformEnabled } = rawState;
 
-    const nextRoot = denormalize(root, NOTES_COUNT - 1);
-    let nextState = { enabled: transformEnabled, root: nextRoot };
-
-    const [, maxTonics, minTonics] = selectTonics(nextState);
-    let nextTonics = denormalize(tonics, maxTonics - minTonics) + minTonics;
-    nextState = { ...nextState, tonics: nextTonics };
-
-    const [, maxIndex] = selectIndexes(nextState);
-    let nextIndex = denormalize(index, maxIndex);
-    nextState = { ...nextState, index: nextIndex };
-
-    const [, maxMode] = selectModes(nextState);
-    let nextMode = denormalize(mode, maxMode);
-    nextState = { ...nextState, mode: nextMode };
-
-    return nextState;
+    return { enabled: transformEnabled, rawRoot: root, rawTonics: tonics, rawIndex: index, rawMode: mode };
 };
 
 const createParametersStore = async () => {

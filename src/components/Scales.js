@@ -132,7 +132,8 @@ class Scales extends Component {
             10: 'Deca',
         };
         const { tonics, nextTonics, prevTonics } = this.props;
-        const tonicsPostfix = tonicsMap[tonics] ? `(${tonicsMap[tonics]}tonic)` : '';
+        const [currentTonics] = tonics;
+        const tonicsPostfix = tonicsMap[currentTonics] ? `(${tonicsMap[currentTonics]}tonic)` : '';
         return (
             <View {...styles.headingSubContainer}>
                 <Text {...styles.text}>Tones: </Text>
@@ -140,7 +141,7 @@ class Scales extends Component {
                     <Button onClick={prevTonics}>
                         <Text {...styles.text}>{'<'}</Text>
                     </Button>
-                    <Text {...styles.text} color={colors.primary}>{`${tonics} `}</Text>
+                    <Text {...styles.text} color={colors.primary}>{`${currentTonics} `}</Text>
                     <Button onClick={nextTonics}>
                         <Text {...styles.text}>{'>'}</Text>
                     </Button>
@@ -257,7 +258,7 @@ Scales.propTypes = {
     root: PropTypes.number.isRequired,
     modes: PropTypes.array.isRequired,
     indexes: PropTypes.array.isRequired,
-    tonics: PropTypes.number.isRequired,
+    tonics: PropTypes.arrayOf(PropTypes.number.isRequired),
     names: PropTypes.arrayOf(PropTypes.string.isRequired),
     current: PropTypes.shape({
         name: PropTypes.string.isRequired,

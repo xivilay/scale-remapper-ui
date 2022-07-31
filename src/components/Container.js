@@ -2,7 +2,8 @@ import { connect } from 'react-redux';
 
 import Component from './Scales';
 import {
-    getTonics,
+    selectRoot,
+    selectTonics,
     selectKnownNames,
     selectIndexes,
     selectModes,
@@ -13,8 +14,8 @@ import { getNextIntervals } from '../store/utils';
 
 export const mapStateToProps = (state) => ({
     enabled: state.enabled,
-    root: state.root,
-    tonics: getTonics(state),
+    root: selectRoot(state),
+    tonics: selectTonics(state),
     modes: selectModes(state),
     indexes: selectIndexes(state),
     names: selectKnownNames(state),

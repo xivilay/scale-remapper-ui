@@ -6,37 +6,37 @@ const NOTES_COUNT = notesPerOctave;
 const minTonics = 1;
 const maxTonics = NOTES_COUNT;
 
-const getTonics = (store) => store.tonics;
-const getIndex = (store) => store.index;
-const getMode = (store) => store.mode;
+const getRawTonics = (store) => store.rawTonics;
+const getRawIndex = (store) => store.rawIndex;
+const getRawMode = (store) => store.rawMode;
+const getRawRoot = (store) => store.rawRoot;
+
+const denormalize = (float, range) => Math.round(float * range);
 
 const getId = (scale) => scale.intervals.join(' ');
 
-const selectKnownNames = createSelector(getTonics, (tonics) =>
-    getNamesList(tonics).sort((a, b) => {
-        const getIndex = (a) => parseInt(a.substring(0, a.indexOf(':')));
-        return getIndex(a) - getIndex(b);
-    })
-);
+const selectTonics = createSelector(getRawTonics, (rawTonics) => [
+    denormalize(rawTonics, maxTonics - minTonics) + minTonics,
+    maxTonics,
+    minTonics,
+]);
 
-const selectTonics = createSelector(getTonics, (tonics) => [tonics, maxTonics, minTonics]);
-
-const selectIndexes = createSelector([getTonics, getIndex], (tonics, index) => {
-    const max = getScalesCount(tonics, NOTES_COUNT) - 1;
-    return [index, max];
+const selectIndexes = createSelector([selectTonics, getRawIndex], ([tonics], rawIndex) => {
+    const maxIndex = getScalesCount(tonics, NOTES_COUNT) - 1;
+    return [denormalize(rawIndex, maxIndex), maxIndex];
 });
 
-const selectModes = createSelector([getTonics, getIndex, getMode], (tonics, index, mode) => {
-    const max = getModesCount(tonics, index, NOTES_COUNT) - 1;
-    return [mode, max];
+const selectModes = createSelector([selectTonics, selectIndexes, getRawMode], ([tonics], [index], rawMode) => {
+    const maxMode = getModesCount(tonics, index, NOTES_COUNT) - 1;
+    return [denormalize(rawMode, maxMode), maxMode];
 });
 
-const selectCurrent = createSelector([getTonics, getIndex, getMode], (tonics, index, mode) => {
+const selectCurrent = createSelector([selectTonics, selectIndexes, selectModes], ([tonics], [index], [mode]) => {
     const scale = getScale(tonics, index, mode, NOTES_COUNT);
     return { id: getId(scale), name: scale.name, intervals: scale.intervals };
 });
 
-const selectSiblings = createSelector([getTonics, getIndex], (tonics, index) => {
+const selectSiblings = createSelector([selectTonics, selectIndexes], ([tonics], [index]) => {
     return getScale(tonics, index, 0, NOTES_COUNT)
         .generateIntervals()
         .map((intervals) => {
@@ -47,4 +47,15 @@ const selectSiblings = createSelector([getTonics, getIndex], (tonics, index) => 
         });
 });
 
-export { selectKnownNames, selectIndexes, selectModes, selectCurrent, selectSiblings, getTonics, selectTonics };
+const selectKnownNames = createSelector(selectTonics, ([tonics]) =>
+    getNamesList(tonics).sort((a, b) => {
+        const getIndex = (a) => parseInt(a.substring(0, a.indexOf(':')));
+        return getIndex(a) - getIndex(b);
+    })
+);
+
+const selectRoot = createSelector(getRawRoot, (rawRoot) => {
+    return denormalize(rawRoot, NOTES_COUNT - 1);
+});
+
+export { selectKnownNames, selectIndexes, selectModes, selectCurrent, selectSiblings, selectTonics, selectRoot };
