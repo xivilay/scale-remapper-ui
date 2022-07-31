@@ -2,7 +2,7 @@ import { createStore } from 'redux';
 import reducer from './reducers';
 import { EventBridge } from 'react-juce';
 import { setParameterValueNotifyingHost } from '../natives';
-import { selectTonics, selectIndexes, selectModes, selectCurrent, selectRoot } from '../store/selectors';
+import { selectCurrent } from '../store/selectors';
 import { notesPerOctave } from '../theory/chords/utils';
 
 const NOTES_COUNT = notesPerOctave;
@@ -15,24 +15,20 @@ const getStoreUpdateHandler = (store) => {
             return int / (range - 1);
         };
         const state = store.getState();
-        const [tonics, maxTonics, minTonics] = selectTonics(state);
-        const [index, maxIndex] = selectIndexes(state);
-        const [mode, maxMode] = selectModes(state);
-        const root = selectRoot(state);
-        const { enabled } = state;
+        const { rawTonics, rawIndex, rawMode, rawRoot, enabled } = state;
         const paramsToUpdate = [];
 
         if (prevState) {
-            const prevTonics = selectTonics(prevState)[0];
-            const prevIndex = selectIndexes(prevState)[0];
-            const prevMode = selectModes(prevState)[0];
+            const prevTonics = prevState.rawTonics;
+            const prevIndex = prevState.rawIndex;
+            const prevMode = prevState.rawMode;
             const prevEnabled = prevState.enabled;
-            const prevRoot = prevState.root;
-            if (prevTonics !== tonics) paramsToUpdate.push('tonics');
-            if (prevIndex !== index) paramsToUpdate.push('index');
-            if (prevMode !== mode) paramsToUpdate.push('mode');
+            const prevRoot = prevState.rawRoot;
+            if (prevTonics !== rawTonics) paramsToUpdate.push('tonics');
+            if (prevIndex !== rawIndex) paramsToUpdate.push('index');
+            if (prevMode !== rawMode) paramsToUpdate.push('mode');
             if (prevEnabled !== enabled) paramsToUpdate.push('enabled');
-            if (prevRoot !== root) paramsToUpdate.push('root');
+            if (prevRoot !== rawRoot) paramsToUpdate.push('root');
         } else {
             paramsToUpdate.push(...[`index`, `mode`, `tonics`, `enabled`, `root`]);
         }
@@ -41,16 +37,16 @@ const getStoreUpdateHandler = (store) => {
             setParameterValueNotifyingHost('transformEnabled', enabled);
         }
         if (paramsToUpdate.includes('root')) {
-            setParameterValueNotifyingHost(`root`, normalize(root, NOTES_COUNT));
+            setParameterValueNotifyingHost(`root`, rawRoot);
         }
         if (paramsToUpdate.includes('tonics')) {
-            setParameterValueNotifyingHost(`tonics`, normalize(tonics - minTonics, maxTonics - minTonics + 1));
+            setParameterValueNotifyingHost(`tonics`, rawTonics);
         }
         if (paramsToUpdate.includes('index')) {
-            setParameterValueNotifyingHost(`index`, normalize(index, maxIndex + 1));
+            setParameterValueNotifyingHost(`index`, rawIndex);
         }
         if (paramsToUpdate.includes('mode')) {
-            setParameterValueNotifyingHost(`mode`, normalize(mode, maxMode + 1));
+            setParameterValueNotifyingHost(`mode`, rawMode);
         }
         if (paramsToUpdate.includes('tonics') || paramsToUpdate.includes('index') || paramsToUpdate.includes('mode')) {
             const { intervals } = selectCurrent(state);
