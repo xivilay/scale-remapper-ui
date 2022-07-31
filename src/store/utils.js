@@ -30,3 +30,10 @@ export const getSelectedKeys = (intervals, root) =>
         },
         [root]
     );
+
+export const denormalize = (float, range) => Math.round(float * range);
+
+export const normalize = (int, range) => {
+    if (range === 1) return int === 0 ? 0 : 1;
+    return int / (range - 1);
+};

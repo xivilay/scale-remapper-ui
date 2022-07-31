@@ -1,13 +1,9 @@
 import { selectRoot, selectTonics, selectIndexes, selectModes } from '../store/selectors';
 import { getScaleByName, getScaleByIntervals } from '../theory/scales/scale-db';
 import { notesPerOctave } from '../theory/chords/utils';
+import { normalize } from './utils';
 
 const NOTES_COUNT = notesPerOctave;
-
-const normalize = (int, range) => {
-    if (range === 1) return int === 0 ? 0 : 1;
-    return int / (range - 1);
-};
 
 const getRawValues = (state, tonics, index, mode) => {
     const [, maxTonics, minTonics] = selectTonics(state);

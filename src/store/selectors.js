@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 import { getNamesList, getScale, getScaleByIntervals, getModesCount, getScalesCount } from '../theory/scales/scale-db';
 import { notesPerOctave } from '../theory/chords/utils';
+import { denormalize } from './utils';
 
 const NOTES_COUNT = notesPerOctave;
 const minTonics = 1;
@@ -11,7 +12,7 @@ const getRawIndex = (store) => store.rawIndex;
 const getRawMode = (store) => store.rawMode;
 const getRawRoot = (store) => store.rawRoot;
 
-const denormalize = (float, range) => Math.round(float * range);
+
 
 const getId = (scale) => scale.intervals.join(' ');
 

@@ -4,16 +4,13 @@ import { EventBridge } from 'react-juce';
 import { setParameterValueNotifyingHost } from '../natives';
 import { selectCurrent } from '../store/selectors';
 import { notesPerOctave } from '../theory/chords/utils';
+import { normalize } from './utils';
 
 const NOTES_COUNT = notesPerOctave;
 
 const getStoreUpdateHandler = (store) => {
     let prevState;
     return () => {
-        const normalize = (int, range) => {
-            if (range === 1) return int === 0 ? 0 : 1;
-            return int / (range - 1);
-        };
         const state = store.getState();
         const { rawTonics, rawIndex, rawMode, rawRoot, enabled } = state;
         const paramsToUpdate = [];
@@ -59,18 +56,18 @@ const getStoreUpdateHandler = (store) => {
     };
 };
 
-const getParameterValueChangeHandler = (dispatch) => (index, changedParamId, defaultValue, currentValue) => {
+const getParameterValueChangeHandler = (dispatch) => (index, changedParamId, defaultValue, rawValue) => {
     switch (changedParamId) {
         case 'transformEnabled':
-            return dispatch({ type: 'enabled/set', value: !!currentValue });
+            return dispatch({ type: 'enabled/set', value: !!rawValue });
         case 'root':
-            return dispatch({ type: 'root/set', rawValue: currentValue });
+            return dispatch({ type: 'root/set', rawValue });
         case 'mode':
-            return dispatch({ type: 'mode/set', rawValue: currentValue });
+            return dispatch({ type: 'mode/set', rawValue });
         case 'index':
-            return dispatch({ type: 'index/set', rawValue: currentValue });
+            return dispatch({ type: 'index/set', rawValue });
         case 'tonics':
-            return dispatch({ type: 'tonics/set', rawValue: currentValue });
+            return dispatch({ type: 'tonics/set', rawValue });
     }
 };
 
