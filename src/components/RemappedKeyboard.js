@@ -8,6 +8,21 @@ import { notes, whiteNotes, notesPerOctave } from '../theory/chords/utils';
 
 const KEYS_COUNT = notesPerOctave;
 
+const fullColors = [
+    '#cf3550',
+    '#f55333',
+    '#fd7033',
+    '#ffa53e',
+    '#ffc255',
+    '#ffff00',
+    '#d1d545',
+    '#6da951',
+    '#2191ce',
+    '#4d6db5',
+    '#564a9d',
+    '#8c55a2',
+];
+
 class ScaleKeyboard extends Component {
     constructor(props) {
         super(props);
@@ -26,8 +41,13 @@ class ScaleKeyboard extends Component {
 
         const labels = indexes.map((i) => notes[selected[i]]);
         const keyColors = indexes.map((i) => {
-            if (i === 0) return colors.primary;
-            if (i) return colors.secondaryBright;
+            const showColors = true;
+            if (showColors) {
+                if (i || i === 0) return fullColors[selected[i]];
+            } else {
+                if (i === 0) return colors.primary;
+                if (i) return colors.secondaryBright;
+            }
         });
 
         const getOctave = (labels, keyColors) => (
