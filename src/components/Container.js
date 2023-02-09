@@ -33,6 +33,8 @@ export const mapDispatchToProps = (dispatch) => {
         prevMode: () => dispatch({ type: 'mode/prev' }),
         nextTonics: () => dispatch({ type: 'tonics/next' }),
         prevTonics: () => dispatch({ type: 'tonics/prev' }),
+        nextShift: () => dispatch({ type: 'shift/next' }),
+        prevShift: () => dispatch({ type: 'shift/prev' }),
         selectName: (name) => dispatch({ type: 'name/selected', name }),
         selectIntervals: (intervals) => dispatch({ type: 'intervals/selected', intervals }),
         selectKey: (...args) => dispatch({ type: 'intervals/selected', intervals: getNextIntervals(...args) }),
