@@ -184,6 +184,17 @@ class Scales extends Component {
         );
     }
 
+    renderShiftKeys() {
+        return <View>
+            <Button onClick={this.props.prevShift}>
+                <Text {...styles.text}>{'<'}</Text>
+            </Button>
+            <Button onClick={this.props.nextShift}>
+                <Text {...styles.text}>{'>'}</Text>
+            </Button>
+        </View>
+    }
+
     render() {
         return (
             <>
@@ -199,7 +210,10 @@ class Scales extends Component {
                     </View>
                 </View>
                 {this.renderInfo()}
-                <Text {...styles.text}>Original:</Text>
+                <View {...styles.headingSubContainer} width="100%">
+                    <Text {...styles.text}>Original:</Text>
+                    {this.renderShiftKeys()}
+                </View>
                 {this.renderKeyboard()}
                 <Text {...styles.text}>Remapped:</Text>
                 <RemappedKeyboard
@@ -281,9 +295,11 @@ Scales.propTypes = {
     prevMode: PropTypes.func.isRequired,
     nextTonics: PropTypes.func.isRequired,
     prevTonics: PropTypes.func.isRequired,
+    prevShift: PropTypes.func.isRequired,
+    nextShift: PropTypes.func.isRequired,
     selectName: PropTypes.func.isRequired,
     selectIntervals: PropTypes.func.isRequired,
-    selectKey: PropTypes.func.isRequired,
+    selectKey: PropTypes.func.isRequired
 };
 
 export default Scales;

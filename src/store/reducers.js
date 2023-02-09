@@ -1,7 +1,7 @@
-import { selectRoot, selectTonics, selectIndexes, selectModes } from '../store/selectors';
+import { selectCurrent, selectRoot, selectTonics, selectIndexes, selectModes } from '../store/selectors';
 import { getScaleByName, getScaleByIntervals } from '../theory/scales/scale-db';
 import { notesPerOctave } from '../theory/chords/utils';
-import { normalize } from './utils';
+import { normalize, getSelectedKeys } from './utils';
 
 const NOTES_COUNT = notesPerOctave;
 
@@ -35,6 +35,18 @@ const reduceIndex = (state, forward) => {
     const nextIndex = getNext(forward, index, maxIndex);
     return { ...state, rawIndex: normalize(nextIndex, maxIndex + 1) };
 };
+
+const reduceShift = (state, forward) => {
+    const { intervals } = selectCurrent(state);
+    const root = selectRoot(state);
+    const selected = getSelectedKeys(intervals, root);
+    const rootIndex = selected.indexOf(root);
+    const nextRootIndex = getNext(forward, rootIndex, selected.length - 1);
+    const nextRoot = selected[nextRootIndex];
+    const [mode, maxMode] = selectModes(state);
+    const nextMode = getNext(forward, mode, maxMode);
+    return { ...state, rawMode: normalize(nextMode, maxMode + 1), rawRoot: normalize(nextRoot, NOTES_COUNT) };
+}
 
 export default (state, action) => {
     switch (action.type) {
@@ -87,6 +99,12 @@ export default (state, action) => {
         }
         case 'mode/set': {
             return { ...state, rawMode: action.rawValue };
+        }
+        case 'shift/next': {
+            return reduceShift(state, true);
+        }
+        case 'shift/prev': {
+            return reduceShift(state, false);
         }
         case 'name/selected': {
             const [tonics] = selectTonics(state);
