@@ -9,3 +9,6 @@ export const endParameterChangeGesture = (paramId) =>
 
 export const setParameterValueNotifyingHost = (paramId, value) =>
   global.setParameterValueNotifyingHost?.(paramId, value);
+
+export const sendComputedKeysData = (value) =>
+  global.sendComputedKeysData?.(value);

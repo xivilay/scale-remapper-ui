@@ -1,8 +1,8 @@
 import { createStore } from 'redux';
 import reducer from './reducers';
 import { EventBridge } from 'react-juce';
-import { setParameterValueNotifyingHost } from '../natives';
-import { selectCurrent } from '../store/selectors';
+import { setParameterValueNotifyingHost, sendComputedKeysData } from '../natives';
+import { selectCurrent, selectKeysData } from '../store/selectors';
 import { notesPerOctave } from '../theory/chords/utils';
 import { normalize } from './utils';
 
@@ -10,6 +10,7 @@ const NOTES_COUNT = notesPerOctave;
 
 const getStoreUpdateHandler = (store) => {
     let prevState;
+    let prevComputed;
     return () => {
         const state = store.getState();
         const { rawTonics, rawIndex, rawMode, rawRoot, enabled } = state;
@@ -50,6 +51,12 @@ const getStoreUpdateHandler = (store) => {
             intervals.forEach((val, i) => {
                 setParameterValueNotifyingHost(`interval${i}`, normalize(val - 1, NOTES_COUNT));
             });
+        }
+
+        const computed = selectKeysData(state);
+        if (computed !== prevComputed) {
+            sendComputedKeysData(computed);
+            prevComputed = computed;
         }
 
         prevState = state;
@@ -108,6 +115,11 @@ const createParametersStore = async () => {
 
     subscribe(storeUpdateHandler);
     EventBridge.addListener('parameterValueChange', parameterValueChangeHandler);
+    EventBridge.addListener('requestComputedKeysData', () => {
+        const state = store.getState();
+        const computed = selectKeysData(state);
+        sendComputedKeysData(computed);
+    });
 
     return store;
 };
