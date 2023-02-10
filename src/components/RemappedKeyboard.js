@@ -29,7 +29,7 @@ class RemappedKeyboard extends Component {
     }
 
     render() {
-        const { root, intervals, width, height, onKeyDown, colorsEnabled } = this.props;
+        const { root, intervals, width, height, onKeyDown, colorsEnabled, remapEnabled } = this.props;
         const selected = getSelectedKeys(intervals, root);
 
         const indexes = [...Array(KEYS_COUNT * 2).keys()].map((i) => {
@@ -53,7 +53,7 @@ class RemappedKeyboard extends Component {
             <OctaveKeyboard
                 width={width}
                 height={height}
-                colors={keyColors}
+                colors={remapEnabled && keyColors}
                 customLabels={labels}
                 borderColor={colors.background}
                 whiteColor={colors.white}
@@ -77,7 +77,8 @@ RemappedKeyboard.propTypes = {
     root: PropTypes.number.isRequired,
     intervals: PropTypes.arrayOf(PropTypes.number.isRequired),
     onKeyDown: PropTypes.func.isRequired,
-    colorsEnabled: PropTypes.bool
+    colorsEnabled: PropTypes.bool,
+    remapEnabled: PropTypes.bool
 };
 
 export default RemappedKeyboard;

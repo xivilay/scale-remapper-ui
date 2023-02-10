@@ -226,6 +226,7 @@ class Scales extends Component {
                     root={this.props.root}
                     intervals={this.props.current.intervals}
                     colorsEnabled={this.props.colorsEnabled}
+                    remapEnabled={this.props.enabled}
                 />
             </>
         );
