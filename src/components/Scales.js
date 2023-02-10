@@ -7,9 +7,9 @@ import RemappedKeyboard from './RemappedKeyboard';
 import { notes } from '../theory/chords/utils';
 
 class Scales extends Component {
-    renderClickableItem(text, color, callback) {
+    renderClickableItem(text, color, callback, props = {}) {
         return (
-            <Button {...styles.button} onClick={callback}>
+            <Button {...styles.button} width="100%" onClick={callback} {...props}>
                 <Text {...styles.text} color={color}>
                     {text}
                 </Text>
@@ -33,8 +33,6 @@ class Scales extends Component {
     renderBrowser() {
         const { names, current, selectName } = this.props;
         const currentIndex = names.indexOf(current.name);
-        // hack list view incorrectly renders items height
-        const scrollableList = names.length > 12 ? styles.scrollableList : {};
         return (
             <View {...styles.listContainer}>
                 <View {...styles.headingContainer}>
@@ -42,11 +40,11 @@ class Scales extends Component {
                 </View>
                 <ListView
                     {...styles.list}
-                    {...scrollableList}
+                    {...styles.scrollableList}
                     data={names}
-                    renderItem={(name) => {
+                    renderItem={(name, index, props) => {
                         const color = name === current.name ? colors.primary : colors.text;
-                        return this.renderClickableItem(name, color, () => selectName(name));
+                        return this.renderClickableItem(name, color, () => selectName(name), props);
                     }}
                 />
             </View>
@@ -235,7 +233,7 @@ class Scales extends Component {
 
 const styles = {
     scrollableList: {
-        itemHeight: 13, // 4
+        itemHeight: 25
     },
     list: {
         height: 250,
