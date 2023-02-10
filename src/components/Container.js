@@ -21,6 +21,7 @@ export const mapStateToProps = (state) => ({
     names: selectKnownNames(state),
     current: selectCurrent(state),
     siblings: selectSiblings(state),
+    colorsEnabled: state.colorsEnabled
 });
 
 export const mapDispatchToProps = (dispatch) => {
@@ -39,6 +40,7 @@ export const mapDispatchToProps = (dispatch) => {
         selectIntervals: (intervals) => dispatch({ type: 'intervals/selected', intervals }),
         selectKey: (...args) => dispatch({ type: 'intervals/selected', intervals: getNextIntervals(...args) }),
         toggleEnabled: () => dispatch({ type: 'enabled/toggle' }),
+        toggleColors: () => dispatch({ type: 'settings/colorsEnabled' }),
     };
 };
 

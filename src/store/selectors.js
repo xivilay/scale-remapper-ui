@@ -60,12 +60,13 @@ const selectRoot = createSelector(getRawRoot, (rawRoot) => {
 const selectActiveKeys = createSelector([selectCurrent, selectRoot], ({ intervals }, root) => {
     return getSelectedKeys(intervals, root);
 });
-const selectKeysData = createSelector([selectActiveKeys, selectRoot], (selected, root) => {
-    const bitIntervals =[...Array(NOTES_COUNT).keys()].reduce((acc, val) => {
+const selectKeysData = createSelector([selectActiveKeys, selectRoot, s => s.colorsEnabled], (selected, root, colors) => {
+    const rootKeyBitLength = 4;
+    const bitIntervals = [...Array(NOTES_COUNT).keys()].reduce((acc, val) => {
         return acc += selected.includes(val) ? 1 : 0;
     }, "");
-    // 4 bits for root & 12 bits for intervals
-    const bits = (root << NOTES_COUNT) + parseInt(bitIntervals, 2);
+    // 1bit - colorsEnabled, 4 bits - rootKey, 12 bits - intervals
+    const bits = (!!colors << (NOTES_COUNT + rootKeyBitLength)) + (root << NOTES_COUNT) + parseInt(bitIntervals, 2);
     return bits;
 });
 

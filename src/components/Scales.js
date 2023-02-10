@@ -201,7 +201,12 @@ class Scales extends Component {
                 {this.renderRoot()}
                 <View {...styles.headingSubContainer} width="100%">
                     {this.renderTones()}
-                    {this.renderToggle()}
+                    <View>
+                        <Button onClick={this.props.toggleColors}>
+                            <Text {...styles.text}>{'🔴'}</Text>
+                        </Button>
+                        {this.renderToggle()}
+                    </View>
                 </View>
                 <View>
                     <View {...styles.headingSubContainer} width="100%">
@@ -220,6 +225,7 @@ class Scales extends Component {
                     {...styles.keyboard}
                     root={this.props.root}
                     intervals={this.props.current.intervals}
+                    colorsEnabled={this.props.colorsEnabled}
                 />
             </>
         );
@@ -299,7 +305,9 @@ Scales.propTypes = {
     nextShift: PropTypes.func.isRequired,
     selectName: PropTypes.func.isRequired,
     selectIntervals: PropTypes.func.isRequired,
-    selectKey: PropTypes.func.isRequired
+    selectKey: PropTypes.func.isRequired,
+    toggleColors: PropTypes.func.isRequired,
+    colorsEnabled: PropTypes.bool
 };
 
 export default Scales;

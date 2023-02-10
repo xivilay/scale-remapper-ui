@@ -125,6 +125,11 @@ export default (state, action) => {
             if (isNaN(tonics) || isNaN(index) || isNaN(mode)) return state;
             return getRawValues(state, tonics, index, mode);
         }
+        case 'settings/colorsEnabled': {
+            const colorsEnabled = state.colorsEnabled;
+            const nextState = {...state, colorsEnabled: !colorsEnabled}
+            return nextState;
+        }
         default:
             return state;
     }

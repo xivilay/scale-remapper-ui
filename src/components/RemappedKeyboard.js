@@ -23,13 +23,13 @@ const fullColors = [
     '#8c55a2',
 ];
 
-class ScaleKeyboard extends Component {
+class RemappedKeyboard extends Component {
     constructor(props) {
         super(props);
     }
 
     render() {
-        const { root, intervals, width, height, onKeyDown } = this.props;
+        const { root, intervals, width, height, onKeyDown, colorsEnabled } = this.props;
         const selected = getSelectedKeys(intervals, root);
 
         const indexes = [...Array(KEYS_COUNT * 2).keys()].map((i) => {
@@ -41,8 +41,7 @@ class ScaleKeyboard extends Component {
 
         const labels = indexes.map((i) => notes[selected[i]]);
         const keyColors = indexes.map((i) => {
-            const showColors = true;
-            if (showColors) {
+            if (colorsEnabled) {
                 if (i || i === 0) return fullColors[selected[i]];
             } else {
                 if (i === 0) return colors.primary;
@@ -72,12 +71,13 @@ class ScaleKeyboard extends Component {
     }
 }
 
-ScaleKeyboard.propTypes = {
+RemappedKeyboard.propTypes = {
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
     root: PropTypes.number.isRequired,
     intervals: PropTypes.arrayOf(PropTypes.number.isRequired),
     onKeyDown: PropTypes.func.isRequired,
+    colorsEnabled: PropTypes.bool
 };
 
-export default ScaleKeyboard;
+export default RemappedKeyboard;
