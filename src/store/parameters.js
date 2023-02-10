@@ -4,6 +4,7 @@ import { EventBridge } from 'react-juce';
 import { setParameterValueNotifyingHost, sendComputedKeysData } from '../natives';
 import { selectCurrent, selectKeysData } from '../store/selectors';
 import { notesPerOctave } from '../theory/chords/utils';
+import { addScaleToDb } from '../theory/scales/scale-db';
 import { normalize } from './utils';
 
 const NOTES_COUNT = notesPerOctave;
@@ -123,5 +124,22 @@ const createParametersStore = async () => {
 
     return store;
 };
+
+export const subscribeGetLocalScales = () => {
+    EventBridge.addListener('getLocalScales', (text) => {
+        text.split('\n').filter(line => !/^\S*$/.test(line)).map(str => str.replaceAll(/\s+/g, ' ').split(" ").reduce((acc, val) => {
+            if (acc.isInt && !isNaN(val)) {
+                acc.intervals.push(parseInt(val));
+            } else {
+                acc.text += ` ${val}`;
+                acc.isInt = false;
+            }
+            return acc;
+        }, { intervals: [], text: "", isInt: true })).forEach(scale => {
+            addScaleToDb(scale.intervals, scale.text.trim());
+        });
+        
+    });
+}
 
 export default createParametersStore;

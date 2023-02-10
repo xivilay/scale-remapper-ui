@@ -233,7 +233,7 @@ class Scales extends Component {
 
 const styles = {
     scrollableList: {
-        itemHeight: 25
+        itemHeight: 25,
     },
     list: {
         height: 250,

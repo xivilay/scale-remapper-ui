@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import { View } from 'react-juce';
 import Scales from './Container';
-import createParametersStore from '../store/parameters';
+import createParametersStore, { subscribeGetLocalScales } from '../store/parameters';
 import { colors } from '../theme';
 
 class App extends Component {
@@ -12,6 +12,7 @@ class App extends Component {
     }
 
     async componentDidMount() {
+        subscribeGetLocalScales();
         const store = await createParametersStore();
         this.setState({ store });
     }
