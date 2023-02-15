@@ -79,6 +79,13 @@ const getParameterValueChangeHandler = (dispatch) => (index, changedParamId, def
     }
 };
 
+const getUiSettingsChangeHandler = (dispatch) => (changedId, value) => {
+    switch (changedId) {
+        case 64:
+            return dispatch({ type: 'settings/colorsEnabled'});
+    }
+};
+
 const retrieveInitialParameters = () => {
     const expectedParams = ['tonics', 'index', 'mode', 'root', 'transformEnabled'];
     let restoredParams = {};
@@ -100,7 +107,7 @@ const retrieveInitialParameters = () => {
 const getInitialStateFromRaw = (rawState) => {
     const { tonics, index, mode, root, transformEnabled } = rawState;
 
-    return { enabled: transformEnabled, rawRoot: root, rawTonics: tonics, rawIndex: index, rawMode: mode };
+    return { enabled: transformEnabled, rawRoot: root, rawTonics: tonics, rawIndex: index, rawMode: mode, colorsEnabled: true };
 };
 
 const createParametersStore = async () => {
@@ -116,6 +123,7 @@ const createParametersStore = async () => {
 
     subscribe(storeUpdateHandler);
     EventBridge.addListener('parameterValueChange', parameterValueChangeHandler);
+    EventBridge.addListener('uiSettingsChange', getUiSettingsChangeHandler(dispatch));
     EventBridge.addListener('requestComputedKeysData', () => {
         const state = store.getState();
         const computed = selectKeysData(state);
@@ -138,7 +146,6 @@ export const subscribeGetLocalScales = () => {
         }, { intervals: [], text: "", isInt: true })).forEach(scale => {
             addScaleToDb(scale.intervals, scale.text.trim());
         });
-        
     });
 }
 
