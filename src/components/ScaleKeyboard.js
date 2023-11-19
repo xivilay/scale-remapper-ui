@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { View } from 'react-juce';
+import { View } from 'react-native';
 import { colors } from '../theme';
 import OctaveKeyboard from './OctaveKeyboard';
 import { getSelectedKeys } from '../store/utils';
@@ -44,10 +44,10 @@ class ScaleKeyboard extends Component {
 }
 
 ScaleKeyboard.propTypes = {
-    width: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired,
+    width: PropTypes.number,
+    height: PropTypes.number,
     root: PropTypes.number.isRequired,
-    intervals: PropTypes.arrayOf(PropTypes.number.isRequired),
+    intervals: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
     onKeyDown: PropTypes.func.isRequired,
 };
 

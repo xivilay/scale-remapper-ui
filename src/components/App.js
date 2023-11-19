@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
-import { View } from 'react-juce';
+import { View } from 'react-native';
 import Scales from './Container';
 import createParametersStore, { subscribeGetLocalScales } from '../store/parameters';
 import { colors } from '../theme';
@@ -20,8 +20,8 @@ class App extends Component {
     render() {
         const { store } = this.state;
         return (
-            <View {...styles.container}>
-                <View {...styles.content}>
+            <View style={styles.container}>
+                <View style={styles.content}>
                     {store && (
                         <Provider store={store}>
                             <Scales />

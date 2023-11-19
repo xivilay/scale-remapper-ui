@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Canvas, View } from 'react-juce';
+import { Canvas, View } from 'react-native';
 import { notes, whiteNotes, blackNotes, notesPerOctave } from '../theory/chords/utils';
 
 const defaultColors = {
@@ -134,20 +134,20 @@ class OctaveKeyboard extends Component {
         const onMouseDown = onKeyDown && ((e) => onKeyDown(this.getKey(e)));
         return (
             <View onMouseDown={onMouseDown}>
-                <Canvas width={width} height={height} animate={false} onDraw={(ctx) => this.renderKeyboard(ctx)} />
+                {/* <Canvas width={width} height={height} animate={false} onDraw={(ctx) => this.renderKeyboard(ctx)} /> */}
             </View>
         );
     }
 }
 
 OctaveKeyboard.propTypes = {
-    width: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired,
+    width: PropTypes.number,
+    height: PropTypes.number,
     borderColor: PropTypes.string,
     whiteColor: PropTypes.string,
     blackColor: PropTypes.string,
     colors: PropTypes.arrayOf(PropTypes.string),
-    onKeyDown: PropTypes.func.isRequired,
+    onKeyDown: PropTypes.func,
     showLabels: PropTypes.bool,
     showLabelCircle: PropTypes.bool,
     customLabels: PropTypes.arrayOf(PropTypes.string),
