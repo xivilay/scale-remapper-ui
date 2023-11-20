@@ -112,7 +112,7 @@ const getInitialStateFromRaw = (rawState) => {
 
 const createParametersStore = async () => {
     // const restoredRawParams = await retrieveInitialParameters();
-    const restoredRawParams = {'tonics' : 0, 'index': 0, 'mode': 0, 'root': 0, 'transformEnabled': true};
+    const restoredRawParams = {'tonics' : 0.54, 'index': 0, 'mode': 0.16, 'root': 0, 'transformEnabled': true};
     const preloadedState = getInitialStateFromRaw(restoredRawParams);
     
     const store = configureStore({ reducer, preloadedState });

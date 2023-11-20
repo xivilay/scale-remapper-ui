@@ -35,7 +35,7 @@ class ScaleKeyboard extends Component {
         );
 
         return (
-            <View>
+            <View style={{flexDirection: 'row'}}>
                 {octave}
                 {octave}
             </View>
@@ -44,8 +44,8 @@ class ScaleKeyboard extends Component {
 }
 
 ScaleKeyboard.propTypes = {
-    width: PropTypes.number,
-    height: PropTypes.number,
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired,
     root: PropTypes.number.isRequired,
     intervals: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
     onKeyDown: PropTypes.func.isRequired,

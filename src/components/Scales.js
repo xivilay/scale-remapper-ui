@@ -8,7 +8,7 @@ import { notes } from '../theory/chords/utils';
 
 const ButtonWithText = ({text, color, callback}) => (
     <Pressable style={styles.button} onPress={callback}>
-        <Text style={styles.text} color={color}>
+        <Text style={[styles.text, {color}]}>
             {text}
         </Text>
     </Pressable>
@@ -37,6 +37,7 @@ class Scales extends Component {
                     <Text style={styles.text}>{`Browser (${currentIndex + 1} of ${names.length})`}</Text>
                 </View>
                 <VirtualizedList
+                    keyExtractor={(item) => item}
                     style={[ styles.list, styles.scrollableList]}
                     getItem={(_data, id) => names[id]}
                     getItemCount={() => names.length}
@@ -76,6 +77,7 @@ class Scales extends Component {
                 </View>
                 <VirtualizedList
                     style={styles.list}
+                    keyExtractor={(item) => item.id}
                     getItem={(_data, id) => siblings[id]}
                     getItemCount={() => siblings.length}
                     renderItem={({ item }) => {
@@ -98,7 +100,7 @@ class Scales extends Component {
         const info = [`Name: ${current.name || 'Unknown'}`, `Intervals: ${current.id}`];
 
         return (
-            <View style={[styles.list, { height: 80, width: '100%', flexDirection: "column" }]}>
+            <View style={[styles.list, { height: 80, flexDirection: "column" }]}>
                 {info.map((line, i) => (
                     <Text key={i} style={styles.text} color={colors.textInactive}>
                         {line}
@@ -128,7 +130,7 @@ class Scales extends Component {
                 <View style={styles.buttonsContainer}>
                     <Text style={styles.text}>Tones: </Text>
                     <ButtonWithText text={'<'} callback={prevTonics} />
-                    <Text style={styles.text} color={colors.primary}>{`${currentTonics} `}</Text>
+                    <Text style={[styles.text, {color: colors.primary}]}>{`${currentTonics} `}</Text>
                     <ButtonWithText text={'>'} callback={nextTonics} />
                     <Text style={styles.text}>{`${tonicsPostfix}`}</Text>
                 </View>
@@ -142,7 +144,7 @@ class Scales extends Component {
                 <View style={styles.buttonsContainer}>
                     <Text style={styles.text}>Root: </Text>
                     <ButtonWithText text={'<'} callback={prevRoot} />
-                    <Text style={styles.text} color={colors.primary}>{`${rootNote}`}</Text>
+                    <Text style={[styles.text, {color: colors.primary}]}>{`${rootNote}`}</Text>
                     <ButtonWithText text={'>'} callback={nextRoot} />
                 </View>
         );
@@ -151,7 +153,7 @@ class Scales extends Component {
     renderKeyboard() {
         return (
             <ScaleKeyboard
-                style={styles.keyboard}
+                {...styles.keyboard}
                 root={this.props.root}
                 intervals={this.props.current.intervals}
                 onKeyDown={(keyIndex) => {
@@ -176,7 +178,7 @@ class Scales extends Component {
                 <View style={styles.headingSubContainer}>
                     {this.renderTones()}
                     <View style={styles.buttonsContainer}>
-                        <ButtonWithText text={'🔴'} callback={this.props.toggleColors} />
+                        <ButtonWithText text={'✮'} callback={this.props.toggleColors} />
                         {this.renderToggle()}
                     </View>
                 </View>
@@ -194,7 +196,7 @@ class Scales extends Component {
                 {this.renderKeyboard()}
                 <Text style={styles.text}>Remapped:</Text>
                 <RemappedKeyboard
-                    style={styles.keyboard}
+                    {...styles.keyboard}
                     root={this.props.root}
                     intervals={this.props.current.intervals}
                     colorsEnabled={this.props.colorsEnabled}
@@ -219,14 +221,14 @@ const styles = {
         itemHeight: 25,
     },
     listContainer: {
-        height: 300,
+        height: 350,
         width: 250,
         flexDirection: 'column',
         justifyContent: 'space-between',
     },
     headingContainer: {
         flexDirection: 'column',
-        height: '30%',
+        height: '20%',
     },
     headingSubContainer: {
         flexDirection: 'row',
@@ -242,7 +244,8 @@ const styles = {
         marginLeft: 5,
     },
     button: {
-        minWidth: 'max-content'
+        minWidth: 'max-content',
+        userSelect: 'none'
     },
     keyboard: {
         width: 255,
