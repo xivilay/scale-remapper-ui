@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { View } from 'react-native';
-import Svg, { Path, Rect, Text } from "react-native-svg"
+import { Canvas, View } from 'react-juce';
 import { notes, whiteNotes, blackNotes, notesPerOctave } from '../theory/chords/utils';
 
 const defaultColors = {
@@ -81,50 +80,46 @@ class OctaveKeyboard extends Component {
             borderColor,
             whiteColor,
             blackColor,
-            showLabels = false,
+            showLabels = true,
             customLabels,
         } = this.props;
 
-        const strokeStyle = borderColor || defaultColors.border;
+        ctx.strokeStyle = borderColor || defaultColors.border;
 
         const whiteKeysEdges = this.getWhiteKeysEdges();
         const blackKeysEdges = this.getBlackKeysEdges();
 
         const drawKeys = (edges, keys, color) => {
-            return edges.map(([x0, y0, x1, y1], i) => {
+            edges.forEach(([x0, y0, x1, y1], i) => {
                 let fillStyle = color;
                 const overrideColor = colors?.[keys[i]];
                 if (overrideColor) fillStyle = overrideColor;
 
-                // ctx.beginPath();
-                // ctx.moveTo(x0, y0);
-                // ctx.lineTo(x0, y1);
-                // ctx.lineTo(x1, y1);
-                // ctx.lineTo(x1, y0);
-                // ctx.fillStyle = fillStyle;
-                // ctx.fill();
-                // ctx.stroke();
-                // ctx.closePath();
+                ctx.beginPath();
+                ctx.moveTo(x0, y0);
+                ctx.lineTo(x0, y1);
+                ctx.lineTo(x1, y1);
+                ctx.lineTo(x1, y0);
+                ctx.fillStyle = fillStyle;
+                ctx.fill();
+                ctx.stroke();
+                ctx.closePath();
                 if (showLabels) {
                     let labelText = notes[keys[i]];
                     if (customLabels) labelText = customLabels[keys[i]];
                     this.renderKeyText(ctx, [x0, y0, x1, y1], labelText);
                 }
-                return <Rect key={color+i} x={x0} y={y0} width={x1 - x0} height={y1 - y0} fill={fillStyle} stroke={strokeStyle} strokeWidth="1"  />;
             });
         };
 
-        // ctx.clearRect(0, 0, width, height);
+        ctx.clearRect(0, 0, width, height);
 
-        const whitePaths = drawKeys(whiteKeysEdges, whiteNotes, whiteColor || defaultColors.white);
-        const blackPaths = drawKeys(blackKeysEdges, blackNotes, blackColor || defaultColors.black);
-        return [...whitePaths, ...blackPaths];
+        drawKeys(whiteKeysEdges, whiteNotes, whiteColor || defaultColors.white);
+        drawKeys(blackKeysEdges, blackNotes, blackColor || defaultColors.black);
     }
 
     getKey(e) {
-        // const { x, y } = e;
-        const { offsetX, offsetY } = e.nativeEvent;
-        const x = offsetX; const y = offsetY;
+        const { x, y } = e;
         const whiteKeysEdges = this.getWhiteKeysEdges();
         const blackKeysEdges = this.getBlackKeysEdges();
         const isBelong = ([x0, y0, x1, y1]) => x > x0 && x < x1 && y > y0 && y < y1;
@@ -137,12 +132,9 @@ class OctaveKeyboard extends Component {
     render() {
         const { width, height, onKeyDown } = this.props;
         const onMouseDown = onKeyDown && ((e) => onKeyDown(this.getKey(e)));
-        // const paths = this.renderKeyboard();
         return (
             <View onMouseDown={onMouseDown}>
-                <Svg width={width} height={height}>
-                    {this.renderKeyboard()}
-                </Svg>
+                <Canvas width={width} height={height} animate={false} onDraw={(ctx) => this.renderKeyboard(ctx)} />
             </View>
         );
     }
@@ -155,7 +147,7 @@ OctaveKeyboard.propTypes = {
     whiteColor: PropTypes.string,
     blackColor: PropTypes.string,
     colors: PropTypes.arrayOf(PropTypes.string),
-    onKeyDown: PropTypes.func,
+    onKeyDown: PropTypes.func.isRequired,
     showLabels: PropTypes.bool,
     showLabelCircle: PropTypes.bool,
     customLabels: PropTypes.arrayOf(PropTypes.string),

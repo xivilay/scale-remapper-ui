@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import reducer from './reducers';
-// import { EventBridge } from 'react-juce';
+import { EventBridge } from 'react-juce';
 import { setParameterValueNotifyingHost, sendComputedKeysData } from '../natives';
 import { selectCurrent, selectKeysData } from '../store/selectors';
 import { notesPerOctave } from '../theory/chords/utils';
@@ -94,13 +94,13 @@ const retrieveInitialParameters = () => {
     return new Promise((resolve) => {
         const setupInitialParameters = (index, changedParamId, defaultValue, currentValue) => {
             if (isRestored()) {
-                // EventBridge.removeListener('parameterValueChange', setupInitialParameters);
+                EventBridge.removeListener('parameterValueChange', setupInitialParameters);
                 resolve(restoredParams);
             } else {
                 restoredParams[changedParamId] = currentValue;
             }
         };
-        // EventBridge.addListener('parameterValueChange', setupInitialParameters);
+        EventBridge.addListener('parameterValueChange', setupInitialParameters);
     });
 };
 
@@ -111,8 +111,9 @@ const getInitialStateFromRaw = (rawState) => {
 };
 
 const createParametersStore = async () => {
-    // const restoredRawParams = await retrieveInitialParameters();
-    const restoredRawParams = {'tonics' : 0.54, 'index': 0, 'mode': 0.16, 'root': 0, 'transformEnabled': true};
+    subscribeGetLocalScales();
+
+    const restoredRawParams = await retrieveInitialParameters();
     const preloadedState = getInitialStateFromRaw(restoredRawParams);
     
     const store = configureStore({ reducer, preloadedState });
@@ -123,31 +124,31 @@ const createParametersStore = async () => {
     const parameterValueChangeHandler = getParameterValueChangeHandler(dispatch);
 
     subscribe(storeUpdateHandler);
-    // EventBridge.addListener('parameterValueChange', parameterValueChangeHandler);
-    // EventBridge.addListener('uiSettingsChange', getUiSettingsChangeHandler(dispatch));
-    // EventBridge.addListener('requestComputedKeysData', () => {
-    //     const state = store.getState();
-    //     const computed = selectKeysData(state);
-    //     sendComputedKeysData(computed);
-    // });
+    EventBridge.addListener('parameterValueChange', parameterValueChangeHandler);
+    EventBridge.addListener('uiSettingsChange', getUiSettingsChangeHandler(dispatch));
+    EventBridge.addListener('requestComputedKeysData', () => {
+        const state = store.getState();
+        const computed = selectKeysData(state);
+        sendComputedKeysData(computed);
+    });
 
     return store;
 };
 
 export const subscribeGetLocalScales = () => {
-    // EventBridge.addListener('getLocalScales', (text) => {
-    //     text.split('\n').filter(line => !/^\S*$/.test(line)).map(str => str.replaceAll(/\s+/g, ' ').split(" ").reduce((acc, val) => {
-    //         if (acc.isInt && !isNaN(val)) {
-    //             acc.intervals.push(parseInt(val));
-    //         } else {
-    //             acc.text += ` ${val}`;
-    //             acc.isInt = false;
-    //         }
-    //         return acc;
-    //     }, { intervals: [], text: "", isInt: true })).forEach(scale => {
-    //         addScaleToDb(scale.intervals, scale.text.trim());
-    //     });
-    // });
+    EventBridge.addListener('getLocalScales', (text) => {
+        text.split('\n').filter(line => !/^\S*$/.test(line)).map(str => str.replaceAll(/\s+/g, ' ').split(" ").reduce((acc, val) => {
+            if (acc.isInt && !isNaN(val)) {
+                acc.intervals.push(parseInt(val));
+            } else {
+                acc.text += ` ${val}`;
+                acc.isInt = false;
+            }
+            return acc;
+        }, { intervals: [], text: "", isInt: true })).forEach(scale => {
+            addScaleToDb(scale.intervals, scale.text.trim());
+        });
+    });
 }
 
 export default createParametersStore;

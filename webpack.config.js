@@ -5,14 +5,18 @@ module.exports = {
         filename: 'bundle.js',
         sourceMapFilename: '[file].map',
         devtoolModuleFilenameTemplate: (info) => `webpack:///${info.absoluteResourcePath.replace(/\\/g, '/')}`,
+        iife: false,
     },
     devtool: 'source-map',
     module: {
         rules: [
             {
                 test: /\.(js|jsx)$/,
-                exclude: /node_modules/,
-                use: ['babel-loader'],
+                // exclude: /node_modules/,
+                loader: 'babel-loader',
+                options: {
+                    presets: [['@babel/preset-env', { modules: 'umd' }], '@babel/preset-react']
+                },
             },
             {
                 test: /\.svg$/,
@@ -32,5 +36,11 @@ module.exports = {
                 ],
             },
         ],
+    },
+    resolve: {
+        alias: {
+            'react-native$': 'react-juce',
+        },
+        extensions: ['.juce.js', '.js', '.juce.ts', '.ts', '.juce.jsx', '.jsx', '.juce.tsx', '.tsx'],
     },
 };

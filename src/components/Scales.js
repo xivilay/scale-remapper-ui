@@ -1,23 +1,17 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Text, Pressable, VirtualizedList, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { colors } from '../theme';
 import ScaleKeyboard from './ScaleKeyboard';
 import RemappedKeyboard from './RemappedKeyboard';
+import { ButtonWithText } from './ButtonWithText';
+import { ScrollableList } from './ScrollableList';
 import { notes } from '../theory/chords/utils';
 
-const ButtonWithText = ({text, color, callback}) => (
-    <Pressable style={styles.button} onPress={callback}>
-        <Text style={[styles.text, {color}]}>
-            {text}
-        </Text>
-    </Pressable>
-)
-
 class Scales extends Component {
-    renderClickableItem(text, color, callback) {
+    renderClickableItem(text, color, callback, props) {
         return (
-            <ButtonWithText text={text} callback={callback} color={color}/>
+            <ButtonWithText text={text} callback={callback} color={color} {...props}/>
         );
     }
 
@@ -36,14 +30,12 @@ class Scales extends Component {
                 <View style={styles.headingContainer}>
                     <Text style={styles.text}>{`Browser (${currentIndex + 1} of ${names.length})`}</Text>
                 </View>
-                <VirtualizedList
+                <ScrollableList
                     keyExtractor={(item) => item}
-                    style={[ styles.list, styles.scrollableList]}
-                    getItem={(_data, id) => names[id]}
-                    getItemCount={() => names.length}
-                    renderItem={({item}) => {
+                    data={names}
+                    renderItem={(item, index, props) => {
                         const color = item === current.name ? colors.primary : colors.text;
-                        return this.renderClickableItem(item, color, () => selectName(item));
+                        return this.renderClickableItem(item, color, () => selectName(item), props);
                     }}
                 />
             </View>
@@ -75,12 +67,10 @@ class Scales extends Component {
                         </View>
                     </View>
                 </View>
-                <VirtualizedList
-                    style={styles.list}
+                <ScrollableList
                     keyExtractor={(item) => item.id}
-                    getItem={(_data, id) => siblings[id]}
-                    getItemCount={() => siblings.length}
-                    renderItem={({ item }) => {
+                    data={siblings}
+                    renderItem={( item ) => {
                         const { name, id, intervals } = item;
                         let color = colors.text;
                         if (id === current.id) {
