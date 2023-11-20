@@ -34,9 +34,9 @@
         "webpack-dev-server": "^4.15.1"
     },
     "scripts": {
-        "start": "webpack -w --mode=development --config ./webpack.config.js",
-        "build-dev": "webpack --mode=development --config ./webpack.config.js",
-        "build": "webpack --mode=production --config ./webpack.config.js",
+        "start": "webpack -w --mode=development --config ./juce/webpack.config.js",
+        "build-dev": "webpack --mode=development --config ./juce/webpack.config.js",
+        "build": "webpack --mode=production --config ./juce/webpack.config.js",
         "web": "webpack-dev-server --config ./web/webpack.config.js --mode development",
         "web:build": "webpack --config ./web/webpack.config.js --mode production"
     }

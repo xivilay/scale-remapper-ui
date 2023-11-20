@@ -1,21 +1,37 @@
 module.exports = {
-    entry: './src/index.js',
+    entry: './juce/index.js',
     output: {
-        path: __dirname + '/build/js',
+        path: __dirname + '/../build/js',
         filename: 'bundle.js',
         sourceMapFilename: '[file].map',
         devtoolModuleFilenameTemplate: (info) => `webpack:///${info.absoluteResourcePath.replace(/\\/g, '/')}`,
         iife: false,
     },
     devtool: 'source-map',
+    target: ['web', 'es5'],
     module: {
         rules: [
             {
                 test: /\.(js|jsx)$/,
-                // exclude: /node_modules/,
+                // exclude: {
+                //     and: [/node_modules/],
+                //     not: [/node_modules\/react-redux/],
+                // },
                 loader: 'babel-loader',
                 options: {
-                    presets: [['@babel/preset-env', { modules: 'umd' }], '@babel/preset-react']
+                    presets: [
+                        [
+                            '@babel/preset-env',
+                            {
+                                modules: 'umd',
+                                corejs: { version: '3.33' },
+                                useBuiltIns: 'entry',
+                                loose: true,
+                            },
+                        ],
+                        '@babel/preset-react',
+                    ],
+                    plugins: [['@babel/plugin-transform-runtime', { absoluteRuntime: false, corejs: 3 }]],
                 },
             },
             {

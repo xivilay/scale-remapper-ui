@@ -14,7 +14,7 @@ const babelConfig = require('../babel.config');
 const babelLoaderConfiguration = {
     test: /\.(tsx|jsx|ts|js)?$/,
     include: [
-        path.resolve(appDirectory, 'index.js'),
+        path.resolve(appDirectory, 'web', 'index.js'),
         path.resolve(appDirectory, 'src'),
         path.resolve(appDirectory, 'node_modules/react-native-uncompiled'),
     ],
@@ -42,7 +42,7 @@ const imageLoaderConfiguration = {
 
 module.exports = (argv) => {
     return {
-        entry: path.resolve(appDirectory, 'index'),
+        entry: path.resolve(appDirectory, 'web', 'index'),
         output: {
             clean: true,
             path: path.resolve(appDirectory, 'web/dist'),
