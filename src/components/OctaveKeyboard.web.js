@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { View } from 'react-native';
-import Svg, { Rect } from "react-native-svg"
-import {  whiteNotes, blackNotes, notesPerOctave } from '../theory/chords/utils';
+import Svg, { Rect } from 'react-native-svg';
+import { whiteNotes, blackNotes, notesPerOctave } from '../theory/chords/utils';
 
 const defaultColors = {
     white: '#edf2f4',
@@ -49,12 +49,7 @@ class OctaveKeyboard extends Component {
     }
 
     renderKeyboard() {
-        const {
-            colors,
-            borderColor,
-            whiteColor,
-            blackColor,
-        } = this.props;
+        const { colors, borderColor, whiteColor, blackColor } = this.props;
 
         const strokeStyle = borderColor || defaultColors.border;
 
@@ -66,7 +61,18 @@ class OctaveKeyboard extends Component {
                 let fillStyle = color;
                 const overrideColor = colors?.[keys[i]];
                 if (overrideColor) fillStyle = overrideColor;
-                return <Rect key={color+i} x={x0} y={y0} width={x1 - x0} height={y1 - y0} fill={fillStyle} stroke={strokeStyle} strokeWidth="1"  />;
+                return (
+                    <Rect
+                        key={color + i}
+                        x={x0}
+                        y={y0}
+                        width={x1 - x0}
+                        height={y1 - y0}
+                        fill={fillStyle}
+                        stroke={strokeStyle}
+                        strokeWidth="1"
+                    />
+                );
             });
         };
 
@@ -77,7 +83,8 @@ class OctaveKeyboard extends Component {
 
     getKey(e) {
         const { offsetX, offsetY } = e.nativeEvent;
-        const x = offsetX; const y = offsetY;
+        const x = offsetX;
+        const y = offsetY;
         const whiteKeysEdges = this.getWhiteKeysEdges();
         const blackKeysEdges = this.getBlackKeysEdges();
         const isBelong = ([x0, y0, x1, y1]) => x > x0 && x < x1 && y > y0 && y < y1;

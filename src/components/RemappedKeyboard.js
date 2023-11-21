@@ -53,7 +53,7 @@ class RemappedKeyboard extends Component {
             <OctaveKeyboard
                 width={width}
                 height={height}
-                colors={remapEnabled && keyColors || undefined}
+                colors={(remapEnabled && keyColors) || undefined}
                 customLabels={labels}
                 borderColor={colors.background}
                 whiteColor={colors.white}
@@ -63,7 +63,7 @@ class RemappedKeyboard extends Component {
         );
 
         return (
-            <View style={{flexDirection: 'row'}}>
+            <View style={{ flexDirection: 'row' }}>
                 {getOctave(labels.slice(0, KEYS_COUNT), keyColors.slice(0, KEYS_COUNT))}
                 {getOctave(labels.slice(KEYS_COUNT, KEYS_COUNT * 2), keyColors.slice(KEYS_COUNT, KEYS_COUNT * 2))}
             </View>
@@ -78,7 +78,7 @@ RemappedKeyboard.propTypes = {
     intervals: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
     onKeyDown: PropTypes.func,
     colorsEnabled: PropTypes.bool,
-    remapEnabled: PropTypes.bool
+    remapEnabled: PropTypes.bool,
 };
 
 export default RemappedKeyboard;

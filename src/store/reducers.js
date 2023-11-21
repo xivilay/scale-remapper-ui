@@ -46,7 +46,7 @@ const reduceShift = (state, forward) => {
     const [mode, maxMode] = selectModes(state);
     const nextMode = getNext(forward, mode, maxMode);
     return { ...state, rawMode: normalize(nextMode, maxMode + 1), rawRoot: normalize(nextRoot, NOTES_COUNT) };
-}
+};
 
 export default (state, action) => {
     switch (action.type) {
@@ -127,7 +127,7 @@ export default (state, action) => {
         }
         case 'settings/colorsEnabled': {
             const colorsEnabled = state.colorsEnabled;
-            const nextState = {...state, colorsEnabled: !colorsEnabled}
+            const nextState = { ...state, colorsEnabled: !colorsEnabled };
             return nextState;
         }
         default:

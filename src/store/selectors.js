@@ -60,17 +60,31 @@ const selectRoot = createSelector(getRawRoot, (rawRoot) => {
 const selectActiveKeys = createSelector([selectCurrent, selectRoot], ({ intervals }, root) => {
     return getSelectedKeys(intervals, root);
 });
-const selectKeysData = createSelector([selectActiveKeys, selectRoot, s => s.colorsEnabled, s => s.enabled], (selected, root, colors, enabled) => {
-    const rootKeyBitLength = 4;
-    const bitIntervals = [...Array(NOTES_COUNT).keys()].reduce((acc, val) => {
-        return acc += selected.includes(val) ? 1 : 0;
-    }, "");
-    // 1bit - plugin enabled 1bit - colorsEnabled, 4 bits - rootKey, 12 bits - intervals
-    const bits = (!!enabled << (NOTES_COUNT + rootKeyBitLength + 1))
-        + (!!colors << (NOTES_COUNT + rootKeyBitLength))
-        + (root << NOTES_COUNT)
-        + parseInt(bitIntervals, 2);
-    return bits;
-});
+const selectKeysData = createSelector(
+    [selectActiveKeys, selectRoot, (s) => s.colorsEnabled, (s) => s.enabled],
+    (selected, root, colors, enabled) => {
+        const rootKeyBitLength = 4;
+        const bitIntervals = [...Array(NOTES_COUNT).keys()].reduce((acc, val) => {
+            return (acc += selected.includes(val) ? 1 : 0);
+        }, '');
+        // 1bit - plugin enabled 1bit - colorsEnabled, 4 bits - rootKey, 12 bits - intervals
+        const bits =
+            (!!enabled << (NOTES_COUNT + rootKeyBitLength + 1)) +
+            (!!colors << (NOTES_COUNT + rootKeyBitLength)) +
+            (root << NOTES_COUNT) +
+            parseInt(bitIntervals, 2);
+        return bits;
+    }
+);
 
-export { selectKnownNames, selectIndexes, selectModes, selectCurrent, selectSiblings, selectTonics, selectRoot, selectActiveKeys, selectKeysData };
+export {
+    selectKnownNames,
+    selectIndexes,
+    selectModes,
+    selectCurrent,
+    selectSiblings,
+    selectTonics,
+    selectRoot,
+    selectActiveKeys,
+    selectKeysData,
+};

@@ -10,16 +10,14 @@ import { notes } from '../theory/chords/utils';
 
 class Scales extends Component {
     renderClickableItem(text, color, callback, props) {
-        return (
-            <ButtonWithText text={text} callback={callback} color={color} {...props}/>
-        );
+        return <ButtonWithText text={text} callback={callback} color={color} {...props} />;
     }
 
     renderToggle() {
         const { enabled, toggleEnabled } = this.props;
         const stateText = enabled ? 'On' : 'Off';
         const color = enabled ? colors.primary : colors.textInactive;
-        return <ButtonWithText text={stateText} callback={toggleEnabled} color={color} />
+        return <ButtonWithText text={stateText} callback={toggleEnabled} color={color} />;
     }
 
     renderBrowser() {
@@ -53,9 +51,9 @@ class Scales extends Component {
                     <View style={styles.headingSubContainer}>
                         <Text style={styles.text}>Scale:</Text>
                         <View style={styles.buttonsContainer}>
-                            <ButtonWithText text={'<'} callback={prevIndex}/>
+                            <ButtonWithText text={'<'} callback={prevIndex} />
                             <Text style={styles.text}>{`${currentIndex + 1} of ${maxIndex + 1}`}</Text>
-                            <ButtonWithText text={'>'} callback={nextIndex}/>
+                            <ButtonWithText text={'>'} callback={nextIndex} />
                         </View>
                     </View>
                     <View style={styles.headingSubContainer}>
@@ -70,7 +68,7 @@ class Scales extends Component {
                 <ScrollableList
                     keyExtractor={(item) => item.id}
                     data={siblings}
-                    renderItem={( item ) => {
+                    renderItem={(item) => {
                         const { name, id, intervals } = item;
                         let color = colors.text;
                         if (id === current.id) {
@@ -90,7 +88,7 @@ class Scales extends Component {
         const info = [`Name: ${current.name || 'Unknown'}`, `Intervals: ${current.id}`];
 
         return (
-            <View style={[styles.list, { height: 80, flexDirection: "column" }]}>
+            <View style={[styles.list, { height: 80, flexDirection: 'column' }]}>
                 {info.map((line, i) => (
                     <Text key={i} style={styles.text} color={colors.textInactive}>
                         {line}
@@ -117,13 +115,13 @@ class Scales extends Component {
         const [currentTonics] = tonics;
         const tonicsPostfix = tonicsMap[currentTonics] ? `(${tonicsMap[currentTonics]}tonic)` : '';
         return (
-                <View style={styles.buttonsContainer}>
-                    <Text style={styles.text}>Tones: </Text>
-                    <ButtonWithText text={'<'} callback={prevTonics} />
-                    <Text style={[styles.text, {color: colors.primary}]}>{`${currentTonics} `}</Text>
-                    <ButtonWithText text={'>'} callback={nextTonics} />
-                    <Text style={styles.text}>{`${tonicsPostfix}`}</Text>
-                </View>
+            <View style={styles.buttonsContainer}>
+                <Text style={styles.text}>Tones: </Text>
+                <ButtonWithText text={'<'} callback={prevTonics} />
+                <Text style={[styles.text, { color: colors.primary }]}>{`${currentTonics} `}</Text>
+                <ButtonWithText text={'>'} callback={nextTonics} />
+                <Text style={styles.text}>{`${tonicsPostfix}`}</Text>
+            </View>
         );
     }
 
@@ -131,12 +129,12 @@ class Scales extends Component {
         const { root, nextRoot, prevRoot } = this.props;
         const rootNote = notes[root];
         return (
-                <View style={styles.buttonsContainer}>
-                    <Text style={styles.text}>Root: </Text>
-                    <ButtonWithText text={'<'} callback={prevRoot} />
-                    <Text style={[styles.text, {color: colors.primary}]}>{`${rootNote}`}</Text>
-                    <ButtonWithText text={'>'} callback={nextRoot} />
-                </View>
+            <View style={styles.buttonsContainer}>
+                <Text style={styles.text}>Root: </Text>
+                <ButtonWithText text={'<'} callback={prevRoot} />
+                <Text style={[styles.text, { color: colors.primary }]}>{`${rootNote}`}</Text>
+                <ButtonWithText text={'>'} callback={nextRoot} />
+            </View>
         );
     }
 
@@ -155,10 +153,12 @@ class Scales extends Component {
     }
 
     renderShiftKeys() {
-        return <View style={styles.buttonsContainer}>
-            <ButtonWithText text={'<'} callback={this.props.prevShift} />
-            <ButtonWithText text={'>'} callback={this.props.nextShift} />
-        </View>
+        return (
+            <View style={styles.buttonsContainer}>
+                <ButtonWithText text={'<'} callback={this.props.prevShift} />
+                <ButtonWithText text={'>'} callback={this.props.nextShift} />
+            </View>
+        );
     }
 
     render() {
@@ -223,10 +223,10 @@ const styles = {
     headingSubContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        width: "100%"
+        width: '100%',
     },
     buttonsContainer: {
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     text: {
         fontSize: 25,
@@ -235,7 +235,7 @@ const styles = {
     },
     button: {
         minWidth: 'max-content',
-        userSelect: 'none'
+        userSelect: 'none',
     },
     keyboard: {
         width: 255,
@@ -253,13 +253,13 @@ Scales.propTypes = {
     current: PropTypes.shape({
         name: PropTypes.string,
         id: PropTypes.string.isRequired,
-        intervals: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number]))
+        intervals: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
     }),
     siblings: PropTypes.arrayOf(
         PropTypes.shape({
             name: PropTypes.string.isRequired,
             id: PropTypes.string.isRequired,
-            intervals: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number]))
+            intervals: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
         })
     ),
     toggleEnabled: PropTypes.func.isRequired,
@@ -277,7 +277,7 @@ Scales.propTypes = {
     selectIntervals: PropTypes.func.isRequired,
     selectKey: PropTypes.func.isRequired,
     toggleColors: PropTypes.func.isRequired,
-    colorsEnabled: PropTypes.bool
+    colorsEnabled: PropTypes.bool,
 };
 
 export default Scales;

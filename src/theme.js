@@ -7,5 +7,5 @@ export const colors = {
     text: '#b5b8b6',
     textInactive: '#888888',
     white: '#444444',
-    black: '#333333'
+    black: '#333333',
 };

@@ -1,11 +1,9 @@
 import { Text, Pressable } from 'react-native';
 import { colors } from '../theme';
 
-export const ButtonWithText = ({text, color, callback}) => (
+export const ButtonWithText = ({ text, color, callback }) => (
     <Pressable style={styles.button} onPress={callback}>
-        <Text style={[styles.text, {color}]}>
-            {text}
-        </Text>
+        <Text style={[styles.text, { color }]}>{text}</Text>
     </Pressable>
 );
 
@@ -17,6 +15,6 @@ const styles = {
     },
     button: {
         minWidth: 'max-content',
-        userSelect: 'none'
-    }
+        userSelect: 'none',
+    },
 };

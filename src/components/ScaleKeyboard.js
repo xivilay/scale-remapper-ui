@@ -35,7 +35,7 @@ class ScaleKeyboard extends Component {
         );
 
         return (
-            <View style={{flexDirection: 'row'}}>
+            <View style={{ flexDirection: 'row' }}>
                 {octave}
                 {octave}
             </View>
