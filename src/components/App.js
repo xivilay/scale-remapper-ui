@@ -1,36 +1,33 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { View } from 'react-native';
 import Scales from './Container';
 import createParametersStore from '../store/parameters';
 import { colors } from '../theme';
 
-class App extends Component {
-    constructor(props) {
-        super(props);
-        this.state = { store: null };
-    }
+const App = () => {
+    const [store, setStore] = useState();
 
-    async componentDidMount() {
-        const store = await createParametersStore();
-        this.setState({ store });
-    }
+    useEffect(() => {
+        const init = async () => {
+            const store = await createParametersStore();
+            setStore(store);
+        };
+        init();
+    }, []);
 
-    render() {
-        const { store } = this.state;
-        return (
-            <View style={styles.container}>
-                <View style={styles.content}>
-                    {store && (
-                        <Provider store={store}>
-                            <Scales />
-                        </Provider>
-                    )}
-                </View>
+    return (
+        <View style={styles.container}>
+            <View style={styles.content}>
+                {store && (
+                    <Provider store={store}>
+                        <Scales />
+                    </Provider>
+                )}
             </View>
-        );
-    }
-}
+        </View>
+    );
+};
 
 const styles = {
     container: {
