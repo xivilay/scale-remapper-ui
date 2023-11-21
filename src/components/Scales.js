@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { Text, View } from 'react-native';
-import { colors } from '../theme';
+import styles from '../styles';
+import { colors } from '../theme'; // TODO: replace with styles
 import ScaleKeyboard from './ScaleKeyboard';
 import RemappedKeyboard from './RemappedKeyboard';
 import { ButtonWithText } from './ButtonWithText';
@@ -9,8 +10,8 @@ import { ScrollableList } from './ScrollableList';
 import { notes } from '../theory/chords/utils';
 
 class Scales extends Component {
-    renderClickableItem(text, color, callback, props) {
-        return <ButtonWithText text={text} callback={callback} color={color} {...props} />;
+    renderClickableItem(text, color, callback, props = {}) {
+        return <ButtonWithText text={text} callback={callback} color={color} props={props} />;
     }
 
     renderToggle() {
@@ -24,9 +25,9 @@ class Scales extends Component {
         const { names, current, selectName } = this.props;
         const currentIndex = names.indexOf(current.name);
         return (
-            <View style={styles.listContainer}>
-                <View style={styles.headingContainer}>
-                    <Text style={styles.text}>{`Browser (${currentIndex + 1} of ${names.length})`}</Text>
+            <View {...styles.listContainer}>
+                <View {...styles.headingContainer}>
+                    <Text {...styles.text}>{`Browser (${currentIndex + 1} of ${names.length})`}</Text>
                 </View>
                 <ScrollableList
                     keyExtractor={(item) => item}
@@ -46,21 +47,21 @@ class Scales extends Component {
         const [currentIndex, maxIndex] = indexes;
         const [currentModeIndex, maxMode] = modes;
         return (
-            <View style={styles.listContainer}>
-                <View style={styles.headingContainer}>
-                    <View style={styles.headingSubContainer}>
-                        <Text style={styles.text}>Scale:</Text>
-                        <View style={styles.buttonsContainer}>
+            <View {...styles.listContainer}>
+                <View {...styles.headingContainer}>
+                    <View {...styles.headingSubContainer}>
+                        <Text {...styles.text}>Scale:</Text>
+                        <View {...styles.buttonsContainer}>
                             <ButtonWithText text={'<'} callback={prevIndex} />
-                            <Text style={styles.text}>{`${currentIndex + 1} of ${maxIndex + 1}`}</Text>
+                            <Text {...styles.text}>{`${currentIndex + 1} of ${maxIndex + 1}`}</Text>
                             <ButtonWithText text={'>'} callback={nextIndex} />
                         </View>
                     </View>
-                    <View style={styles.headingSubContainer}>
-                        <Text style={styles.text}>{`Mode: `}</Text>
-                        <View style={styles.buttonsContainer}>
+                    <View {...styles.headingSubContainer}>
+                        <Text {...styles.text}>{`Mode: `}</Text>
+                        <View {...styles.buttonsContainer}>
                             <ButtonWithText text={'<'} callback={prevMode} />
-                            <Text style={styles.text}>{`${+currentModeIndex + 1} of ${maxMode + 1}`}</Text>
+                            <Text {...styles.text}>{`${+currentModeIndex + 1} of ${maxMode + 1}`}</Text>
                             <ButtonWithText text={'>'} callback={nextMode} />
                         </View>
                     </View>
@@ -88,9 +89,9 @@ class Scales extends Component {
         const info = [`Name: ${current.name || 'Unknown'}`, `Intervals: ${current.id}`];
 
         return (
-            <View style={[styles.list, { height: 80, flexDirection: 'column' }]}>
+            <View {...styles.info}>
                 {info.map((line, i) => (
-                    <Text key={i} style={styles.text} color={colors.textInactive}>
+                    <Text key={i} {...styles.text} color={colors.textInactive}>
                         {line}
                     </Text>
                 ))}
@@ -115,12 +116,12 @@ class Scales extends Component {
         const [currentTonics] = tonics;
         const tonicsPostfix = tonicsMap[currentTonics] ? `(${tonicsMap[currentTonics]}tonic)` : '';
         return (
-            <View style={styles.buttonsContainer}>
-                <Text style={styles.text}>Tones: </Text>
+            <View {...styles.buttonsContainer}>
+                <Text {...styles.text}>Tones: </Text>
                 <ButtonWithText text={'<'} callback={prevTonics} />
-                <Text style={[styles.text, { color: colors.primary }]}>{`${currentTonics} `}</Text>
+                <Text {...{ ...styles.text, color: colors.primary }}>{`${currentTonics} `}</Text>
                 <ButtonWithText text={'>'} callback={nextTonics} />
-                <Text style={styles.text}>{`${tonicsPostfix}`}</Text>
+                <Text {...styles.text}>{`${tonicsPostfix}`}</Text>
             </View>
         );
     }
@@ -129,10 +130,10 @@ class Scales extends Component {
         const { root, nextRoot, prevRoot } = this.props;
         const rootNote = notes[root];
         return (
-            <View style={styles.buttonsContainer}>
-                <Text style={styles.text}>Root: </Text>
+            <View {...styles.buttonsContainer}>
+                <Text {...styles.text}>Root: </Text>
                 <ButtonWithText text={'<'} callback={prevRoot} />
-                <Text style={[styles.text, { color: colors.primary }]}>{`${rootNote}`}</Text>
+                <Text {...{ ...styles.text, color: colors.primary }}>{`${rootNote}`}</Text>
                 <ButtonWithText text={'>'} callback={nextRoot} />
             </View>
         );
@@ -141,7 +142,8 @@ class Scales extends Component {
     renderKeyboard() {
         return (
             <ScaleKeyboard
-                {...styles.keyboard}
+                width={255}
+                height={100}
                 root={this.props.root}
                 intervals={this.props.current.intervals}
                 onKeyDown={(keyIndex) => {
@@ -154,7 +156,7 @@ class Scales extends Component {
 
     renderShiftKeys() {
         return (
-            <View style={styles.buttonsContainer}>
+            <View {...styles.buttonsContainer}>
                 <ButtonWithText text={'<'} callback={this.props.prevShift} />
                 <ButtonWithText text={'>'} callback={this.props.nextShift} />
             </View>
@@ -165,28 +167,29 @@ class Scales extends Component {
         return (
             <>
                 {this.renderRoot()}
-                <View style={styles.headingSubContainer}>
+                <View {...styles.partContainer}>
                     {this.renderTones()}
-                    <View style={styles.buttonsContainer}>
+                    <View {...styles.buttonsContainer}>
                         <ButtonWithText text={'✮'} callback={this.props.toggleColors} />
                         {this.renderToggle()}
                     </View>
                 </View>
                 <View>
-                    <View style={styles.headingSubContainer}>
+                    <View {...styles.partContainer}>
                         {this.renderBrowser()}
                         {this.renderModes()}
                     </View>
                 </View>
                 {this.renderInfo()}
-                <View style={styles.headingSubContainer}>
-                    <Text style={styles.text}>Original:</Text>
+                <View {...styles.partContainer}>
+                    <Text {...styles.text}>Original:</Text>
                     {this.renderShiftKeys()}
                 </View>
                 {this.renderKeyboard()}
-                <Text style={styles.text}>Remapped:</Text>
+                <Text {...styles.text}>Remapped:</Text>
                 <RemappedKeyboard
-                    {...styles.keyboard}
+                    width={255}
+                    height={100}
                     root={this.props.root}
                     intervals={this.props.current.intervals}
                     colorsEnabled={this.props.colorsEnabled}
@@ -196,52 +199,6 @@ class Scales extends Component {
         );
     }
 }
-
-const styles = {
-    scrollableList: {
-        itemHeight: 25,
-    },
-    list: {
-        height: 250,
-        borderWidth: 3,
-        borderColor: colors.secondary,
-        borderRadius: 3,
-        overflowX: 'hidden',
-        marginBottom: 5,
-        itemHeight: 25,
-    },
-    listContainer: {
-        height: 350,
-        width: 250,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-    },
-    headingContainer: {
-        flexDirection: 'column',
-        height: '20%',
-    },
-    headingSubContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-    },
-    buttonsContainer: {
-        flexDirection: 'row',
-    },
-    text: {
-        fontSize: 25,
-        color: colors.text,
-        marginLeft: 5,
-    },
-    button: {
-        minWidth: 'max-content',
-        userSelect: 'none',
-    },
-    keyboard: {
-        width: 255,
-        height: 100,
-    },
-};
 
 Scales.propTypes = {
     enabled: PropTypes.bool.isRequired,

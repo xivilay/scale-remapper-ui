@@ -1,20 +1,11 @@
 import { Text, Pressable } from 'react-native';
-import { colors } from '../theme';
+import styles from '../styles';
 
-export const ButtonWithText = ({ text, color, callback }) => (
-    <Pressable style={styles.button} onPress={callback}>
-        <Text style={[styles.text, { color }]}>{text}</Text>
-    </Pressable>
-);
-
-const styles = {
-    text: {
-        fontSize: 25,
-        color: colors.text,
-        marginLeft: 5,
-    },
-    button: {
-        minWidth: 'max-content',
-        userSelect: 'none',
-    },
+export const ButtonWithText = ({ text, color, callback }) => {
+    const textStyles = color ? { style: { ...styles.text.style, color } } : styles.text;
+    return (
+        <Pressable {...styles.button} onPress={callback}>
+            <Text {...textStyles}>{text}</Text>
+        </Pressable>
+    );
 };

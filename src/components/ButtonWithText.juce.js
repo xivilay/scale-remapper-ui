@@ -1,4 +1,5 @@
 import { Button, Text } from 'react-juce';
+import styles from '../styles';
 import { colors } from '../theme';
 
 export const ButtonWithText = ({ text, color = colors.text, callback, props = {} }) => (
@@ -8,15 +9,3 @@ export const ButtonWithText = ({ text, color = colors.text, callback, props = {}
         </Text>
     </Button>
 );
-
-const styles = {
-    text: {
-        fontSize: 25,
-        color: colors.text,
-        marginLeft: 5,
-    },
-    button: {
-        minWidth: 'max-content',
-        userSelect: 'none',
-    },
-};
