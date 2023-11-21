@@ -1,7 +1,7 @@
-import { Button } from 'react-juce';
+import { Button, Text } from 'react-juce';
 import { colors } from '../theme';
 
-export const ButtonWithText = ({ text, color, callback }) => (
+export const ButtonWithText = ({ text, color = colors.text, callback, props = {} }) => (
     <Button {...styles.button} onClick={callback} {...props}>
         <Text {...styles.text} color={color}>
             {text}
