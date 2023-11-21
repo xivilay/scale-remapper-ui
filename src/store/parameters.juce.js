@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { createStore } from 'redux';
 import reducer from './reducers';
 import { EventBridge } from 'react-juce';
 import { setParameterValueNotifyingHost, sendComputedKeysData } from '../natives';
@@ -114,9 +114,8 @@ const createParametersStore = async () => {
     subscribeGetLocalScales();
 
     const restoredRawParams = await retrieveInitialParameters();
-    const preloadedState = getInitialStateFromRaw(restoredRawParams);
-    
-    const store = configureStore({ reducer, preloadedState });
+    const defaultState = getInitialStateFromRaw(restoredRawParams);
+    const store = createStore(reducer, defaultState);
 
     const { dispatch, subscribe } = store;
 

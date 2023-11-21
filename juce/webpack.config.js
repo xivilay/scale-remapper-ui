@@ -13,25 +13,13 @@ module.exports = {
         rules: [
             {
                 test: /\.(js|jsx)$/,
-                // exclude: {
-                //     and: [/node_modules/],
-                //     not: [/node_modules\/react-redux/],
-                // },
+                exclude: /node_modules/,
                 loader: 'babel-loader',
                 options: {
                     presets: [
-                        [
-                            '@babel/preset-env',
-                            {
-                                modules: 'umd',
-                                corejs: { version: '3.33' },
-                                useBuiltIns: 'entry',
-                                loose: true,
-                            },
-                        ],
+                        ['@babel/preset-env', { modules: 'umd', useBuiltIns: false, loose: true }],
                         '@babel/preset-react',
                     ],
-                    plugins: [['@babel/plugin-transform-runtime', { absoluteRuntime: false, corejs: 3 }]],
                 },
             },
             {

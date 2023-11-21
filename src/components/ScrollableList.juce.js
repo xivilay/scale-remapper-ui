@@ -1,4 +1,5 @@
 import { ListView } from 'react-juce';
+import { colors } from '../theme';
 
 export const ScrollableList = ({ data, renderItem, keyExtractor }) => {
     return <ListView {...styles.list} {...styles.scrollableList} data={data} renderItem={renderItem} />;

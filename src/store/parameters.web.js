@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { createStore } from 'redux';
 import reducer from './reducers';
 
 const createParametersStore = async () => {
@@ -10,7 +10,7 @@ const createParametersStore = async () => {
         enabled: true,
         colorsEnabled: true,
     };
-    return configureStore({ reducer, preloadedState });
+    return createStore(reducer, preloadedState);
 };
 
 export default createParametersStore;
