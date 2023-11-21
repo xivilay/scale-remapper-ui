@@ -17,7 +17,7 @@ class ScaleKeyboard extends Component {
         const { root, intervals, width, height, onKeyDown } = this.props;
         const selected = getSelectedKeys(intervals, root);
 
-        const keyColors = [...Array(KEYS_COUNT).keys()].map((i) => {
+        const keyColors = [...Array(KEYS_COUNT * 2).fill(0)].map((v, i) => {
             if (root === i) return colors.primary;
             if (selected.includes(i)) return colors.secondaryBright;
         });

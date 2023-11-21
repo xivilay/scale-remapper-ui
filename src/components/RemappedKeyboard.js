@@ -31,8 +31,7 @@ class RemappedKeyboard extends Component {
     render() {
         const { root, intervals, width, height, onKeyDown, colorsEnabled, remapEnabled } = this.props;
         const selected = getSelectedKeys(intervals, root);
-
-        const indexes = [...Array(KEYS_COUNT * 2).keys()].map((i) => {
+        const indexes = [...Array(KEYS_COUNT * 2).fill(0)].map((v, i) => {
             const f = Math.floor(i / KEYS_COUNT);
             i = i % KEYS_COUNT;
             if (!whiteNotes.includes(i)) return;
