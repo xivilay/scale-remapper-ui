@@ -18,7 +18,7 @@ module.exports = {
                 options: {
                     presets: [
                         ['@babel/preset-env', { modules: 'umd', useBuiltIns: false, loose: true }],
-                        '@babel/preset-react',
+                        ['@babel/preset-react', { runtime: 'automatic' }],
                     ],
                 },
             },

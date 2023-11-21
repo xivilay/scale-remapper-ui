@@ -1,6 +1,5 @@
 import 'core-js/stable';
 
-import React from 'react';
 import ReactJUCE from 'react-juce';
 import App from '../src/components/App';
 

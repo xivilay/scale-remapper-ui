@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Canvas, View } from 'react-juce';
 import { notes, whiteNotes, blackNotes, notesPerOctave } from '../theory/chords/utils';
 
