@@ -21,7 +21,7 @@ export const mapStateToProps = (state) => ({
     names: selectKnownNames(state),
     current: selectCurrent(state),
     siblings: selectSiblings(state),
-    colorsEnabled: state.colorsEnabled
+    colorsEnabled: state.colorsEnabled,
 });
 
 export const mapDispatchToProps = (dispatch) => {

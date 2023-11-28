@@ -1,33 +1,24 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Text, Button, ListView, View } from 'react-juce';
-import { colors } from '../theme';
+import { Component } from 'react';
+import { Text, View } from 'react-native';
+import styles from '../styles';
+import { colors } from '../theme'; // TODO: replace with styles
 import ScaleKeyboard from './ScaleKeyboard';
 import RemappedKeyboard from './RemappedKeyboard';
+import { ButtonWithText } from './ButtonWithText';
+import { ScrollableList } from './ScrollableList';
 import { notes } from '../theory/chords/utils';
 
 class Scales extends Component {
     renderClickableItem(text, color, callback, props = {}) {
-        return (
-            <Button {...styles.button} width="100%" onClick={callback} {...props}>
-                <Text {...styles.text} color={color}>
-                    {text}
-                </Text>
-            </Button>
-        );
+        return <ButtonWithText text={text} callback={callback} color={color} props={props} />;
     }
 
     renderToggle() {
         const { enabled, toggleEnabled } = this.props;
         const stateText = enabled ? 'On' : 'Off';
         const color = enabled ? colors.primary : colors.textInactive;
-        return (
-            <Button {...styles.button} onClick={toggleEnabled}>
-                <Text {...styles.text} color={color}>
-                    {stateText}
-                </Text>
-            </Button>
-        );
+        return <ButtonWithText text={stateText} callback={toggleEnabled} color={color} />;
     }
 
     renderBrowser() {
@@ -38,13 +29,12 @@ class Scales extends Component {
                 <View {...styles.headingContainer}>
                     <Text {...styles.text}>{`Browser (${currentIndex + 1} of ${names.length})`}</Text>
                 </View>
-                <ListView
-                    {...styles.list}
-                    {...styles.scrollableList}
+                <ScrollableList
+                    keyExtractor={(item) => item}
                     data={names}
-                    renderItem={(name, index, props) => {
-                        const color = name === current.name ? colors.primary : colors.text;
-                        return this.renderClickableItem(name, color, () => selectName(name), props);
+                    renderItem={(item, index, props) => {
+                        const color = item === current.name ? colors.primary : colors.text;
+                        return this.renderClickableItem(item, color, () => selectName(item), props);
                     }}
                 />
             </View>
@@ -61,33 +51,26 @@ class Scales extends Component {
                 <View {...styles.headingContainer}>
                     <View {...styles.headingSubContainer}>
                         <Text {...styles.text}>Scale:</Text>
-                        <View>
-                            <Button onClick={prevIndex}>
-                                <Text {...styles.text}>{'<'}</Text>
-                            </Button>
+                        <View {...styles.buttonsContainer}>
+                            <ButtonWithText text={'<'} callback={prevIndex} />
                             <Text {...styles.text}>{`${currentIndex + 1} of ${maxIndex + 1}`}</Text>
-                            <Button onClick={nextIndex}>
-                                <Text {...styles.text}>{'>'}</Text>
-                            </Button>
+                            <ButtonWithText text={'>'} callback={nextIndex} />
                         </View>
                     </View>
                     <View {...styles.headingSubContainer}>
                         <Text {...styles.text}>{`Mode: `}</Text>
-                        <View>
-                            <Button onClick={prevMode}>
-                                <Text {...styles.text}>{'<'}</Text>
-                            </Button>
+                        <View {...styles.buttonsContainer}>
+                            <ButtonWithText text={'<'} callback={prevMode} />
                             <Text {...styles.text}>{`${+currentModeIndex + 1} of ${maxMode + 1}`}</Text>
-                            <Button onClick={nextMode}>
-                                <Text {...styles.text}>{'>'}</Text>
-                            </Button>
+                            <ButtonWithText text={'>'} callback={nextMode} />
                         </View>
                     </View>
                 </View>
-                <ListView
-                    {...styles.list}
+                <ScrollableList
+                    keyExtractor={(item) => item.id}
                     data={siblings}
-                    renderItem={({ name, id, intervals }) => {
+                    renderItem={(item) => {
+                        const { name, id, intervals } = item;
                         let color = colors.text;
                         if (id === current.id) {
                             color = colors.primary;
@@ -106,7 +89,7 @@ class Scales extends Component {
         const info = [`Name: ${current.name || 'Unknown'}`, `Intervals: ${current.id}`];
 
         return (
-            <View {...styles.list} height={60} width={'100%'} flexDirection="column">
+            <View {...styles.info}>
                 {info.map((line, i) => (
                     <Text key={i} {...styles.text} color={colors.textInactive}>
                         {line}
@@ -133,18 +116,12 @@ class Scales extends Component {
         const [currentTonics] = tonics;
         const tonicsPostfix = tonicsMap[currentTonics] ? `(${tonicsMap[currentTonics]}tonic)` : '';
         return (
-            <View {...styles.headingSubContainer}>
+            <View {...styles.buttonsContainer}>
                 <Text {...styles.text}>Tones: </Text>
-                <View>
-                    <Button onClick={prevTonics}>
-                        <Text {...styles.text}>{'<'}</Text>
-                    </Button>
-                    <Text {...styles.text} color={colors.primary}>{`${currentTonics} `}</Text>
-                    <Button onClick={nextTonics}>
-                        <Text {...styles.text}>{'>'}</Text>
-                    </Button>
-                    <Text {...styles.text}>{`${tonicsPostfix}`}</Text>
-                </View>
+                <ButtonWithText text={'<'} callback={prevTonics} />
+                <Text {...{ ...styles.text, color: colors.primary }}>{`${currentTonics} `}</Text>
+                <ButtonWithText text={'>'} callback={nextTonics} />
+                <Text {...styles.text}>{`${tonicsPostfix}`}</Text>
             </View>
         );
     }
@@ -153,17 +130,11 @@ class Scales extends Component {
         const { root, nextRoot, prevRoot } = this.props;
         const rootNote = notes[root];
         return (
-            <View {...styles.headingSubContainer}>
+            <View {...styles.buttonsContainer}>
                 <Text {...styles.text}>Root: </Text>
-                <View>
-                    <Button onClick={prevRoot}>
-                        <Text {...styles.text}>{'<'}</Text>
-                    </Button>
-                    <Text {...styles.text} color={colors.primary}>{`${rootNote}`}</Text>
-                    <Button onClick={nextRoot}>
-                        <Text {...styles.text}>{'>'}</Text>
-                    </Button>
-                </View>
+                <ButtonWithText text={'<'} callback={prevRoot} />
+                <Text {...{ ...styles.text, color: colors.primary }}>{`${rootNote}`}</Text>
+                <ButtonWithText text={'>'} callback={nextRoot} />
             </View>
         );
     }
@@ -171,7 +142,8 @@ class Scales extends Component {
     renderKeyboard() {
         return (
             <ScaleKeyboard
-                {...styles.keyboard}
+                width={255}
+                height={100}
                 root={this.props.root}
                 intervals={this.props.current.intervals}
                 onKeyDown={(keyIndex) => {
@@ -183,44 +155,41 @@ class Scales extends Component {
     }
 
     renderShiftKeys() {
-        return <View>
-            <Button onClick={this.props.prevShift}>
-                <Text {...styles.text}>{'<'}</Text>
-            </Button>
-            <Button onClick={this.props.nextShift}>
-                <Text {...styles.text}>{'>'}</Text>
-            </Button>
-        </View>
+        return (
+            <View {...styles.buttonsContainer}>
+                <ButtonWithText text={'<'} callback={this.props.prevShift} />
+                <ButtonWithText text={'>'} callback={this.props.nextShift} />
+            </View>
+        );
     }
 
     render() {
         return (
             <>
                 {this.renderRoot()}
-                <View {...styles.headingSubContainer} width="100%">
+                <View {...styles.partContainer}>
                     {this.renderTones()}
-                    <View>
-                        <Button onClick={this.props.toggleColors}>
-                            <Text {...styles.text}>{'🔴'}</Text>
-                        </Button>
+                    <View {...styles.buttonsContainer}>
+                        <ButtonWithText text={'✮'} callback={this.props.toggleColors} />
                         {this.renderToggle()}
                     </View>
                 </View>
                 <View>
-                    <View {...styles.headingSubContainer} width="100%">
+                    <View {...styles.partContainer}>
                         {this.renderBrowser()}
                         {this.renderModes()}
                     </View>
                 </View>
                 {this.renderInfo()}
-                <View {...styles.headingSubContainer} width="100%">
+                <View {...styles.partContainer}>
                     <Text {...styles.text}>Original:</Text>
                     {this.renderShiftKeys()}
                 </View>
                 {this.renderKeyboard()}
                 <Text {...styles.text}>Remapped:</Text>
                 <RemappedKeyboard
-                    {...styles.keyboard}
+                    width={255}
+                    height={100}
                     root={this.props.root}
                     intervals={this.props.current.intervals}
                     colorsEnabled={this.props.colorsEnabled}
@@ -231,47 +200,6 @@ class Scales extends Component {
     }
 }
 
-const styles = {
-    scrollableList: {
-        itemHeight: 25,
-    },
-    list: {
-        height: 250,
-        borderWidth: 3,
-        borderColor: colors.secondary,
-        borderRadius: 3,
-        overflowX: 'hidden',
-        marginBottom: 5,
-        itemHeight: 25,
-    },
-    listContainer: {
-        height: 300,
-        width: 250,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-    },
-    headingContainer: {
-        flexDirection: 'column',
-        height: '20%',
-    },
-    headingSubContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    text: {
-        fontSize: 25,
-        color: colors.text,
-        marginLeft: 5,
-    },
-    button: {
-        height: 50,
-    },
-    keyboard: {
-        width: 255,
-        height: 100,
-    },
-};
-
 Scales.propTypes = {
     enabled: PropTypes.bool.isRequired,
     root: PropTypes.number.isRequired,
@@ -280,15 +208,15 @@ Scales.propTypes = {
     tonics: PropTypes.arrayOf(PropTypes.number.isRequired),
     names: PropTypes.arrayOf(PropTypes.string.isRequired),
     current: PropTypes.shape({
-        name: PropTypes.string.isRequired,
+        name: PropTypes.string,
         id: PropTypes.string.isRequired,
-        intervals: PropTypes.arrayOf(PropTypes.number.isRequired),
+        intervals: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
     }),
     siblings: PropTypes.arrayOf(
         PropTypes.shape({
             name: PropTypes.string.isRequired,
             id: PropTypes.string.isRequired,
-            intervals: PropTypes.arrayOf(PropTypes.number.isRequired),
+            intervals: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
         })
     ),
     toggleEnabled: PropTypes.func.isRequired,
@@ -306,7 +234,7 @@ Scales.propTypes = {
     selectIntervals: PropTypes.func.isRequired,
     selectKey: PropTypes.func.isRequired,
     toggleColors: PropTypes.func.isRequired,
-    colorsEnabled: PropTypes.bool
+    colorsEnabled: PropTypes.bool,
 };
 
 export default Scales;

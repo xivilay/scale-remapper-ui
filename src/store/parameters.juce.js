@@ -79,10 +79,10 @@ const getParameterValueChangeHandler = (dispatch) => (index, changedParamId, def
     }
 };
 
-const getUiSettingsChangeHandler = (dispatch) => (changedId, value) => {
+const getUiSettingsChangeHandler = (dispatch) => (changedId) => {
     switch (changedId) {
         case 64:
-            return dispatch({ type: 'settings/colorsEnabled'});
+            return dispatch({ type: 'settings/colorsEnabled' });
     }
 };
 
@@ -107,12 +107,18 @@ const retrieveInitialParameters = () => {
 const getInitialStateFromRaw = (rawState) => {
     const { tonics, index, mode, root, transformEnabled } = rawState;
 
-    return { enabled: transformEnabled, rawRoot: root, rawTonics: tonics, rawIndex: index, rawMode: mode, colorsEnabled: true };
+    return {
+        enabled: transformEnabled,
+        rawRoot: root,
+        rawTonics: tonics,
+        rawIndex: index,
+        rawMode: mode,
+        colorsEnabled: true,
+    };
 };
 
 const createParametersStore = async () => {
     const restoredRawParams = await retrieveInitialParameters();
-
     const defaultState = getInitialStateFromRaw(restoredRawParams);
     const store = createStore(reducer, defaultState);
 
@@ -133,20 +139,29 @@ const createParametersStore = async () => {
     return store;
 };
 
-export const subscribeGetLocalScales = () => {
-    EventBridge.addListener('getLocalScales', (text) => {
-        text.split('\n').filter(line => !/^\S*$/.test(line)).map(str => str.replaceAll(/\s+/g, ' ').split(" ").reduce((acc, val) => {
-            if (acc.isInt && !isNaN(val)) {
-                acc.intervals.push(parseInt(val));
-            } else {
-                acc.text += ` ${val}`;
-                acc.isInt = false;
-            }
-            return acc;
-        }, { intervals: [], text: "", isInt: true })).forEach(scale => {
+EventBridge.addListener('getLocalScales', (text) => {
+    text.split('\n')
+        .filter((line) => !/^\S*$/.test(line))
+        .map((str) =>
+            str
+                .replaceAll(/\s+/g, ' ')
+                .split(' ')
+                .reduce(
+                    (acc, val) => {
+                        if (acc.isInt && !isNaN(val)) {
+                            acc.intervals.push(parseInt(val));
+                        } else {
+                            acc.text += ` ${val}`;
+                            acc.isInt = false;
+                        }
+                        return acc;
+                    },
+                    { intervals: [], text: '', isInt: true }
+                )
+        )
+        .forEach((scale) => {
             addScaleToDb(scale.intervals, scale.text.trim());
         });
-    });
-}
+});
 
 export default createParametersStore;

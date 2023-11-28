@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Canvas, View } from 'react-juce';
-import { notes, whiteNotes, blackNotes, notesPerOctave } from '../theory/chords/utils';
+import { Component } from 'react';
+import { View } from 'react-native';
+import Svg, { Rect } from 'react-native-svg';
+import { whiteNotes, blackNotes, notesPerOctave } from '../theory/chords/utils';
 
 const defaultColors = {
     white: '#edf2f4',
@@ -47,79 +48,43 @@ class OctaveKeyboard extends Component {
         return blackKeysEdges;
     }
 
-    renderKeyText(ctx, zone, text) {
-        if (!text) return;
-        const FONT_SIZE = 16;
-        const FONT = `${FONT_SIZE}px monospace`;
-        const [x0, y0, x1, y1] = zone;
-        const center = [x0 + (x1 - x0) / 2, (y1 - y0) * 0.8];
-        ctx.font = FONT;
-        const height = FONT_SIZE;
-        const width = FONT_SIZE * text.length;
+    renderKeyboard() {
+        const { colors, borderColor, whiteColor, blackColor } = this.props;
 
-        const [x, y] = center;
-        ctx.beginPath();
-
-        if (this.props.showLabelCircle) {
-            ctx.fillStyle = defaultColors.white;
-            ctx.moveTo(x, y);
-            ctx.arc(x, y, (height / 5) * 3, 0, 2 * Math.PI);
-            ctx.fill();
-        }
-
-        ctx.fillStyle = defaultColors.border;
-        ctx.fillText(text, x - width / 3, y + height / 3);
-        ctx.closePath();
-    }
-
-    renderKeyboard(ctx) {
-        const {
-            width,
-            height,
-            colors,
-            borderColor,
-            whiteColor,
-            blackColor,
-            showLabels = true,
-            customLabels,
-        } = this.props;
-
-        ctx.strokeStyle = borderColor || defaultColors.border;
+        const strokeStyle = borderColor || defaultColors.border;
 
         const whiteKeysEdges = this.getWhiteKeysEdges();
         const blackKeysEdges = this.getBlackKeysEdges();
 
         const drawKeys = (edges, keys, color) => {
-            edges.forEach(([x0, y0, x1, y1], i) => {
+            return edges.map(([x0, y0, x1, y1], i) => {
                 let fillStyle = color;
                 const overrideColor = colors?.[keys[i]];
                 if (overrideColor) fillStyle = overrideColor;
-
-                ctx.beginPath();
-                ctx.moveTo(x0, y0);
-                ctx.lineTo(x0, y1);
-                ctx.lineTo(x1, y1);
-                ctx.lineTo(x1, y0);
-                ctx.fillStyle = fillStyle;
-                ctx.fill();
-                ctx.stroke();
-                ctx.closePath();
-                if (showLabels) {
-                    let labelText = notes[keys[i]];
-                    if (customLabels) labelText = customLabels[keys[i]];
-                    this.renderKeyText(ctx, [x0, y0, x1, y1], labelText);
-                }
+                return (
+                    <Rect
+                        key={color + i}
+                        x={x0}
+                        y={y0}
+                        width={x1 - x0}
+                        height={y1 - y0}
+                        fill={fillStyle}
+                        stroke={strokeStyle}
+                        strokeWidth="1"
+                    />
+                );
             });
         };
 
-        ctx.clearRect(0, 0, width, height);
-
-        drawKeys(whiteKeysEdges, whiteNotes, whiteColor || defaultColors.white);
-        drawKeys(blackKeysEdges, blackNotes, blackColor || defaultColors.black);
+        const whitePaths = drawKeys(whiteKeysEdges, whiteNotes, whiteColor || defaultColors.white);
+        const blackPaths = drawKeys(blackKeysEdges, blackNotes, blackColor || defaultColors.black);
+        return [...whitePaths, ...blackPaths];
     }
 
     getKey(e) {
-        const { x, y } = e;
+        const { offsetX, offsetY } = e.nativeEvent;
+        const x = offsetX;
+        const y = offsetY;
         const whiteKeysEdges = this.getWhiteKeysEdges();
         const blackKeysEdges = this.getBlackKeysEdges();
         const isBelong = ([x0, y0, x1, y1]) => x > x0 && x < x1 && y > y0 && y < y1;
@@ -134,7 +99,9 @@ class OctaveKeyboard extends Component {
         const onMouseDown = onKeyDown && ((e) => onKeyDown(this.getKey(e)));
         return (
             <View onMouseDown={onMouseDown}>
-                <Canvas width={width} height={height} animate={false} onDraw={(ctx) => this.renderKeyboard(ctx)} />
+                <Svg width={width} height={height}>
+                    {this.renderKeyboard()}
+                </Svg>
             </View>
         );
     }
@@ -147,7 +114,7 @@ OctaveKeyboard.propTypes = {
     whiteColor: PropTypes.string,
     blackColor: PropTypes.string,
     colors: PropTypes.arrayOf(PropTypes.string),
-    onKeyDown: PropTypes.func.isRequired,
+    onKeyDown: PropTypes.func,
     showLabels: PropTypes.bool,
     showLabelCircle: PropTypes.bool,
     customLabels: PropTypes.arrayOf(PropTypes.string),

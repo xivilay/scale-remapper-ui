@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { View } from 'react-juce';
+import { Component } from 'react';
+import { View } from 'react-native';
 import { colors } from '../theme';
 import OctaveKeyboard from './OctaveKeyboard';
 import { getSelectedKeys } from '../store/utils';
@@ -31,8 +31,7 @@ class RemappedKeyboard extends Component {
     render() {
         const { root, intervals, width, height, onKeyDown, colorsEnabled, remapEnabled } = this.props;
         const selected = getSelectedKeys(intervals, root);
-
-        const indexes = [...Array(KEYS_COUNT * 2).keys()].map((i) => {
+        const indexes = [...Array(KEYS_COUNT * 2).fill(0)].map((v, i) => {
             const f = Math.floor(i / KEYS_COUNT);
             i = i % KEYS_COUNT;
             if (!whiteNotes.includes(i)) return;
@@ -53,7 +52,7 @@ class RemappedKeyboard extends Component {
             <OctaveKeyboard
                 width={width}
                 height={height}
-                colors={remapEnabled && keyColors}
+                colors={(remapEnabled && keyColors) || undefined}
                 customLabels={labels}
                 borderColor={colors.background}
                 whiteColor={colors.white}
@@ -63,7 +62,7 @@ class RemappedKeyboard extends Component {
         );
 
         return (
-            <View>
+            <View style={{ flexDirection: 'row' }}>
                 {getOctave(labels.slice(0, KEYS_COUNT), keyColors.slice(0, KEYS_COUNT))}
                 {getOctave(labels.slice(KEYS_COUNT, KEYS_COUNT * 2), keyColors.slice(KEYS_COUNT, KEYS_COUNT * 2))}
             </View>
@@ -75,10 +74,10 @@ RemappedKeyboard.propTypes = {
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
     root: PropTypes.number.isRequired,
-    intervals: PropTypes.arrayOf(PropTypes.number.isRequired),
-    onKeyDown: PropTypes.func.isRequired,
+    intervals: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
+    onKeyDown: PropTypes.func,
     colorsEnabled: PropTypes.bool,
-    remapEnabled: PropTypes.bool
+    remapEnabled: PropTypes.bool,
 };
 
 export default RemappedKeyboard;
