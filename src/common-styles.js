@@ -13,9 +13,6 @@ const styles = {
         flex: 1.0,
         flexDirection: 'column',
         flexWrap: 'wrap',
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start',
-        alignContent: 'flex-start',
     },
     text: {
         fontSize: 25,
@@ -33,6 +30,7 @@ const styles = {
         borderRadius: 3,
         overflowX: 'hidden',
         marginBottom: 5,
+        marginTop: 5,
         itemHeight: 25,
     },
     info: {
@@ -44,13 +42,14 @@ const styles = {
         width: '100%',
     },
     listContainer: {
-        height: 300, // 350
+        height: 300,
         width: 250,
         flexDirection: 'column',
         justifyContent: 'space-between',
     },
     headingContainer: {
         flexDirection: 'column',
+        justifyContent: 'flex-end',
         height: '20%',
     },
     headingSubContainer: {
@@ -64,7 +63,7 @@ const styles = {
     },
     buttonsContainer: {
         flexDirection: 'row',
-    }
+    },
 };
 
 export default styles;
