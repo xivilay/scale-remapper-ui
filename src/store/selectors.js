@@ -64,8 +64,8 @@ const selectKeysData = createSelector(
     [selectActiveKeys, selectRoot, (s) => s.colorsEnabled, (s) => s.enabled],
     (selected, root, colors, enabled) => {
         const rootKeyBitLength = 4;
-        const bitIntervals = [...Array(NOTES_COUNT).keys()].reduce((acc, val) => {
-            return (acc += selected.includes(val) ? 1 : 0);
+        const bitIntervals = [...Array(NOTES_COUNT).fill(0)].reduce((acc, val, i) => {
+            return (acc += selected.includes(i) ? 1 : 0);
         }, '');
         // 1bit - plugin enabled 1bit - colorsEnabled, 4 bits - rootKey, 12 bits - intervals
         const bits =
