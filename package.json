@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "private": true,
     "dependencies": {
+        "@xivilay/music-theory": "^0.0.3",
         "core-js": "^3.33.3",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",

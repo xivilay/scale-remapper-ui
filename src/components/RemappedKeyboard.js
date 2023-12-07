@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { colors } from '../theme';
 import OctaveKeyboard from './OctaveKeyboard';
 import { getSelectedKeys } from '../store/utils';
-import { notes, whiteNotes, notesPerOctave } from '../theory/chords/utils';
+import { notes, whiteNotes, notesPerOctave } from '@xivilay/music-theory';
 
 const KEYS_COUNT = notesPerOctave;
 

@@ -3,8 +3,7 @@ import reducer from './reducers';
 import { EventBridge } from 'react-juce';
 import { setParameterValueNotifyingHost, sendComputedKeysData } from '../natives';
 import { selectCurrent, selectKeysData } from '../store/selectors';
-import { notesPerOctave } from '../theory/chords/utils';
-import { addScaleToDb } from '../theory/scales/scale-db';
+import { notesPerOctave, addScaleToDb } from '@xivilay/music-theory';
 import { normalize } from './utils';
 
 const NOTES_COUNT = notesPerOctave;

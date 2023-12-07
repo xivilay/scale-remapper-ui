@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { View } from 'react-native';
 import Svg, { Rect } from 'react-native-svg';
-import { whiteNotes, blackNotes, notesPerOctave } from '../theory/chords/utils';
+import { whiteNotes, blackNotes, notesPerOctave } from '@xivilay/music-theory';
 
 const defaultColors = {
     white: '#edf2f4',

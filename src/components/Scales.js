@@ -7,7 +7,7 @@ import ScaleKeyboard from './ScaleKeyboard';
 import RemappedKeyboard from './RemappedKeyboard';
 import { ButtonWithText } from './ButtonWithText';
 import { ScrollableList } from './ScrollableList';
-import { notes } from '../theory/chords/utils';
+import { notes } from '@xivilay/music-theory';
 
 class Scales extends Component {
     renderClickableItem(text, color, callback, props = {}) {

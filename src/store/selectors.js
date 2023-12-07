@@ -1,6 +1,12 @@
 import { createSelector } from 'reselect';
-import { getNamesList, getScale, getScaleByIntervals, getModesCount, getScalesCount } from '../theory/scales/scale-db';
-import { notesPerOctave } from '../theory/chords/utils';
+import {
+    notesPerOctave,
+    getNamesList,
+    getScale,
+    getScaleByIntervals,
+    getModesCount,
+    getScalesCount,
+} from '@xivilay/music-theory';
 import { denormalize, getSelectedKeys } from './utils';
 
 const NOTES_COUNT = notesPerOctave;

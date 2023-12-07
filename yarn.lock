@@ -2302,6 +2302,11 @@
   resolved "https://registry.yarnpkg.com/@webpack-cli/serve/-/serve-2.0.5.tgz#325db42395cd49fe6c14057f9a900e427df8810e"
   integrity sha512-lqaoKnRYBdo1UgDX8uF24AfGMifWK19TxPmM5FHc2vAGxrJ/qtyUyFBWoY1tISZdelsQ5fBcOusifo5o5wSJxQ==
 
+"@xivilay/music-theory@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@xivilay/music-theory/-/music-theory-0.0.3.tgz#06ca10994d405f6ecded391f309cf3087336c5a5"
+  integrity sha512-NiPnSwWWOVeUivoymSbZF4CZ1kcm4LopQ0iFVagwfJUgTLtjb4sgbOQFM7t6H1DPouhCs0UbzNnJTq9w+qZa5w==
+
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@xtuc/ieee754/-/ieee754-1.2.0.tgz#eef014a3145ae477a1cbc00cd1e552336dceb790"
