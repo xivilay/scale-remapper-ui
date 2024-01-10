@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { VirtualizedList } from 'react-native';
 import styles from '../styles';
 
@@ -13,4 +14,10 @@ export const ScrollableList = ({ data, renderItem, keyExtractor }) => {
             }}
         />
     );
+};
+
+ScrollableList.propTypes = {
+    data: PropTypes.array.isRequired,
+    renderItem: PropTypes.func.isRequired,
+    keyExtractor: PropTypes.func,
 };
