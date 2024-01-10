@@ -34,7 +34,10 @@ class Scales extends Component {
                     data={names}
                     renderItem={(item, index, props) => {
                         const color = item === current.name ? colors.primary : colors.text;
-                        return this.renderClickableItem(item, color, () => selectName(item), props);
+                        return this.renderClickableItem(item, color, () => selectName(item), {
+                            width: '100%',
+                            ...props,
+                        });
                     }}
                 />
             </View>

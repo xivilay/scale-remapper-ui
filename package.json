@@ -2,6 +2,13 @@
     "name": "scale-remapper",
     "version": "1.0.0",
     "private": true,
+    "scripts": {
+        "start": "webpack -w --mode=development --config ./juce/webpack.config.js",
+        "build-dev": "webpack --mode=development --config ./juce/webpack.config.js",
+        "build": "webpack --mode=production --config ./juce/webpack.config.js",
+        "web": "webpack-dev-server --config ./web/webpack.config.js --mode development",
+        "web:build": "webpack --config ./web/webpack.config.js --mode production"
+    },
     "dependencies": {
         "@xivilay/music-theory": "^0.0.5",
         "core-js": "^3.33.3",
@@ -33,12 +40,5 @@
         "webpack": "^5.89.0",
         "webpack-cli": "^5.1.4",
         "webpack-dev-server": "^4.15.1"
-    },
-    "scripts": {
-        "start": "webpack -w --mode=development --config ./juce/webpack.config.js",
-        "build-dev": "webpack --mode=development --config ./juce/webpack.config.js",
-        "build": "webpack --mode=production --config ./juce/webpack.config.js",
-        "web": "webpack-dev-server --config ./web/webpack.config.js --mode development",
-        "web:build": "webpack --config ./web/webpack.config.js --mode production"
     }
 }
