@@ -1,6 +1,6 @@
 import { selectCurrent, selectRoot, selectTonics, selectIndexes, selectModes } from '../store/selectors';
-import { notesPerOctave, getScaleByName, getScaleByIntervals } from '@xivilay/music-theory';
 import { normalize, getSelectedKeys } from './utils';
+import { notesPerOctave, getScaleByName, getScaleByIntervals } from '@xivilay/music-theory';
 
 const NOTES_COUNT = notesPerOctave;
 

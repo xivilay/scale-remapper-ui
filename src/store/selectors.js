@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import { denormalize, getSelectedKeys } from './utils';
 import {
     notesPerOctave,
     getNamesList,
@@ -7,7 +8,6 @@ import {
     getModesCount,
     getScalesCount,
 } from '@xivilay/music-theory';
-import { denormalize, getSelectedKeys } from './utils';
 
 const NOTES_COUNT = notesPerOctave;
 const minTonics = 1;
