@@ -7,6 +7,9 @@ const overrides = {
     info: {
         height: 80,
     },
+    container: {
+        userSelect: 'none',
+    },
 };
 
 export default Object.keys(styles).reduce((acc, key) => {

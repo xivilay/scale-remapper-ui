@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { View } from 'react-native';
-import Svg, { Rect } from 'react-native-svg';
-import { whiteNotes, blackNotes, notesPerOctave } from '@xivilay/music-theory';
+import Svg, { Rect, Text } from 'react-native-svg';
+import { notes, whiteNotes, blackNotes, notesPerOctave } from '@xivilay/music-theory';
 
 const defaultColors = {
     white: '#edf2f4',
@@ -81,6 +81,45 @@ class OctaveKeyboard extends Component {
         return [...whitePaths, ...blackPaths];
     }
 
+    renderKeyText() {
+        const { showLabels = true, customLabels } = this.props;
+
+        if (!showLabels) return;
+
+        const whiteKeysEdges = this.getWhiteKeysEdges();
+        const blackKeysEdges = this.getBlackKeysEdges();
+
+        const drawKeys = (edges, keys) => {
+            return edges.map(([x0, y0, x1, y1], i) => {
+                let labelText = notes[keys[i]];
+                if (customLabels) labelText = customLabels[keys[i]];
+                if (!labelText) labelText = '';
+
+                const FONT_SIZE = 16;
+                const width = FONT_SIZE * labelText.length;
+                return (
+                    <Text
+                        key={`${keys.length}-${i}`}
+                        x={x0 - (x1 - x0) / 2 - width / 3}
+                        y={y0 - (y1 - y0) * 0.1}
+                        dx={x1 - x0}
+                        dy={y1 - y0}
+                        fill={defaultColors.border}
+                        fontFamily="sans-serif, monospace"
+                        fontSize={FONT_SIZE}
+                        fontWeight={300}
+                    >
+                        {labelText}
+                    </Text>
+                );
+            });
+        };
+
+        const whitePaths = drawKeys(whiteKeysEdges, whiteNotes);
+        const blackPaths = drawKeys(blackKeysEdges, blackNotes);
+        return [...whitePaths, ...blackPaths];
+    }
+
     getKey(e) {
         const { offsetX, offsetY } = e.nativeEvent;
         const x = offsetX;
@@ -101,6 +140,7 @@ class OctaveKeyboard extends Component {
             <View onMouseDown={onMouseDown}>
                 <Svg width={width} height={height}>
                     {this.renderKeyboard()}
+                    {this.renderKeyText()}
                 </Svg>
             </View>
         );
