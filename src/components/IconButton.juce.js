@@ -17,7 +17,7 @@ const iconContainer = {
     alignItems: 'center',
 };
 
-export const ButtonWithIcon = ({ callback, source }) => (
+export const IconButton = ({ callback, source }) => (
     <Button {...styles.button} onClick={callback}>
         <View {...iconContainer}>
             <Image {...imageStyles} stretchToFit={true} source={source} />
@@ -25,7 +25,7 @@ export const ButtonWithIcon = ({ callback, source }) => (
     </Button>
 );
 
-ButtonWithIcon.propTypes = {
+IconButton.propTypes = {
     source: PropTypes.string.isRequired,
     callback: PropTypes.func.isRequired,
 };

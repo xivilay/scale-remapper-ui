@@ -10,13 +10,13 @@ const iconContainer = {
     backgroundColor: colors.background
 };
 
-export const ButtonWithIcon = ({ callback, source }) => (
+export const IconButton = ({ callback, source }) => (
     <Pressable {...styles.button} onPress={callback}>
         <div style={iconContainer} dangerouslySetInnerHTML={{ __html: source }} />
     </Pressable>
 );
 
-ButtonWithIcon.propTypes = {
+IconButton.propTypes = {
     source: PropTypes.string.isRequired,
     callback: PropTypes.func.isRequired,
 };

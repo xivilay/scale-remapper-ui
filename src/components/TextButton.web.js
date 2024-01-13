@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { Text, Pressable } from 'react-native';
 import styles from '../styles';
 
-export const ButtonWithText = ({ text, color, callback }) => {
+export const TextButton = ({ text, color, callback }) => {
     const textStyles = color ? { style: { ...styles.text.style, color } } : styles.text;
     return (
         <Pressable {...styles.button} onPress={callback}>
@@ -11,7 +11,7 @@ export const ButtonWithText = ({ text, color, callback }) => {
     );
 };
 
-ButtonWithText.propTypes = {
+TextButton.propTypes = {
     text: PropTypes.string.isRequired,
     color: PropTypes.string,
     callback: PropTypes.func.isRequired,

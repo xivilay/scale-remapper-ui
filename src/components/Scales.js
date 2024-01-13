@@ -5,8 +5,8 @@ import styles from '../styles';
 import { colors } from '../theme'; // TODO: replace with styles
 import ScaleKeyboard from './ScaleKeyboard';
 import RemappedKeyboard from './RemappedKeyboard';
-import { ButtonWithText } from './ButtonWithText';
-import { ButtonWithIcon } from './ButtonWithIcon';
+import { TextButton } from './TextButton';
+import { IconButton } from './IconButton';
 import { ScrollableList } from './ScrollableList';
 import { notes } from '@xivilay/music-theory';
 
@@ -14,14 +14,14 @@ import paletteIcon from '../assets/palette.svg';
 
 class Scales extends Component {
     renderClickableItem(text, color, callback, props = {}) {
-        return <ButtonWithText text={text} callback={callback} color={color} props={props} />;
+        return <TextButton text={text} callback={callback} color={color} props={props} />;
     }
 
     renderToggle() {
         const { enabled, toggleEnabled } = this.props;
         const stateText = enabled ? 'On' : 'Off';
         const color = enabled ? colors.primary : colors.textInactive;
-        return <ButtonWithText text={stateText} callback={toggleEnabled} color={color} />;
+        return <TextButton text={stateText} callback={toggleEnabled} color={color} />;
     }
 
     renderBrowser() {
@@ -58,17 +58,17 @@ class Scales extends Component {
                     <View {...styles.headingSubContainer}>
                         <Text {...styles.text}>Scale:</Text>
                         <View {...styles.buttonsContainer}>
-                            <ButtonWithText text={'<'} callback={prevIndex} />
+                            <TextButton text={'<'} callback={prevIndex} />
                             <Text {...styles.text}>{`${currentIndex + 1} of ${maxIndex + 1}`}</Text>
-                            <ButtonWithText text={'>'} callback={nextIndex} />
+                            <TextButton text={'>'} callback={nextIndex} />
                         </View>
                     </View>
                     <View {...styles.headingSubContainer}>
                         <Text {...styles.text}>{`Mode: `}</Text>
                         <View {...styles.buttonsContainer}>
-                            <ButtonWithText text={'<'} callback={prevMode} />
+                            <TextButton text={'<'} callback={prevMode} />
                             <Text {...styles.text}>{`${+currentModeIndex + 1} of ${maxMode + 1}`}</Text>
-                            <ButtonWithText text={'>'} callback={nextMode} />
+                            <TextButton text={'>'} callback={nextMode} />
                         </View>
                     </View>
                 </View>
@@ -124,9 +124,9 @@ class Scales extends Component {
         return (
             <View {...styles.buttonsContainer}>
                 <Text {...styles.text}>Tones: </Text>
-                <ButtonWithText text={'<'} callback={prevTonics} />
+                <TextButton text={'<'} callback={prevTonics} />
                 <Text {...{ ...styles.text, color: colors.primary }}>{`${currentTonics} `}</Text>
-                <ButtonWithText text={'>'} callback={nextTonics} />
+                <TextButton text={'>'} callback={nextTonics} />
                 <Text {...styles.text}>{`${tonicsPostfix}`}</Text>
             </View>
         );
@@ -138,9 +138,9 @@ class Scales extends Component {
         return (
             <View {...styles.buttonsContainer}>
                 <Text {...styles.text}>Root: </Text>
-                <ButtonWithText text={'<'} callback={prevRoot} />
+                <TextButton text={'<'} callback={prevRoot} />
                 <Text {...{ ...styles.text, color: colors.primary }}>{`${rootNote}`}</Text>
-                <ButtonWithText text={'>'} callback={nextRoot} />
+                <TextButton text={'>'} callback={nextRoot} />
             </View>
         );
     }
@@ -163,8 +163,8 @@ class Scales extends Component {
     renderShiftKeys() {
         return (
             <View {...styles.buttonsContainer}>
-                <ButtonWithText text={'<'} callback={this.props.prevShift} />
-                <ButtonWithText text={'>'} callback={this.props.nextShift} />
+                <TextButton text={'<'} callback={this.props.prevShift} />
+                <TextButton text={'>'} callback={this.props.nextShift} />
             </View>
         );
     }
@@ -176,7 +176,7 @@ class Scales extends Component {
                 <View {...styles.partContainer}>
                     {this.renderTones()}
                     <View {...styles.buttonsContainer}>
-                        <ButtonWithIcon source={paletteIcon} callback={this.props.toggleColors} />
+                        <IconButton source={paletteIcon} callback={this.props.toggleColors} />
                         {this.renderToggle()}
                     </View>
                 </View>

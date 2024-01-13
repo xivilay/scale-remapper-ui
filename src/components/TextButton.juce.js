@@ -3,7 +3,7 @@ import { Button, Text } from 'react-juce';
 import styles from '../styles';
 import { colors } from '../theme';
 
-export const ButtonWithText = ({ text, color = colors.text, callback, props = {} }) => (
+export const TextButton = ({ text, color = colors.text, callback, props = {} }) => (
     <Button {...styles.button} onClick={callback} {...props}>
         <Text {...styles.text} color={color}>
             {text}
@@ -11,7 +11,7 @@ export const ButtonWithText = ({ text, color = colors.text, callback, props = {}
     </Button>
 );
 
-ButtonWithText.propTypes = {
+TextButton.propTypes = {
     text: PropTypes.string.isRequired,
     color: PropTypes.string,
     callback: PropTypes.func.isRequired,
