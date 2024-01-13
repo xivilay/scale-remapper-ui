@@ -3,11 +3,11 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-        "start": "webpack -w --mode=development --config ./juce/webpack.config.js",
-        "build-dev": "webpack --mode=development --config ./juce/webpack.config.js",
-        "build": "webpack --mode=production --config ./juce/webpack.config.js",
-        "web": "webpack-dev-server --config ./web/webpack.config.js --mode development",
-        "web:build": "webpack --config ./web/webpack.config.js --mode production"
+        "start": "webpack -w --mode=development --config ./juce/webpack.config.cjs",
+        "build-dev": "webpack --mode=development --config ./juce/webpack.config.cjs",
+        "build": "webpack --mode=production --config ./juce/webpack.config.cjs",
+        "web": "webpack-dev-server --config ./web/webpack.config.cjs --mode development",
+        "web:build": "webpack --config ./web/webpack.config.cjs --mode production"
     },
     "dependencies": {
         "@xivilay/music-theory": "^0.0.8",
