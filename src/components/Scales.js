@@ -125,7 +125,9 @@ class Scales extends Component {
             <View {...styles.buttonsContainer}>
                 <Text {...styles.text}>Tones: </Text>
                 <TextButton text={'<'} callback={prevTonics} />
-                <Text {...{ ...styles.text, color: colors.primary }}>{`${currentTonics} `}</Text>
+                <View {...styles.highlightedTextContainer}>
+                    <Text {...styles.highlightedText}>{`${currentTonics} `}</Text>
+                </View>
                 <TextButton text={'>'} callback={nextTonics} />
                 <Text {...styles.text}>{`${tonicsPostfix}`}</Text>
             </View>
@@ -139,7 +141,9 @@ class Scales extends Component {
             <View {...styles.buttonsContainer}>
                 <Text {...styles.text}>Root: </Text>
                 <TextButton text={'<'} callback={prevRoot} />
-                <Text {...{ ...styles.text, color: colors.primary }}>{`${rootNote}`}</Text>
+                <View {...styles.highlightedTextContainer}>
+                    <Text {...styles.highlightedText}>{`${rootNote}`}</Text>
+                </View>
                 <TextButton text={'>'} callback={nextRoot} />
             </View>
         );
@@ -169,7 +173,7 @@ class Scales extends Component {
         );
     }
 
-    render() { 
+    render() {
         return (
             <>
                 {this.renderRoot()}

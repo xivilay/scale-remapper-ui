@@ -15,13 +15,21 @@ const styles = {
         flexWrap: 'wrap',
     },
     text: {
-        fontSize: 25,
+        fontSize: 24,
         color: colors.text,
         marginLeft: 5,
+        marginRight: 5,
+    },
+    highlightedText: {
+        fontSize: 24,
+        color: colors.primary,
+        textAlign: 'center'
+    },
+    highlightedTextContainer: {
+        width: 35
     },
     button: {
-        minWidth: 'max-content',
-        userSelect: 'none',
+        minWidth: 'max-content'
     },
     scrollableList: {
         height: 250,
