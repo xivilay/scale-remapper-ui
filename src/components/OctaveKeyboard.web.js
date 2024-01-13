@@ -48,39 +48,6 @@ class OctaveKeyboard extends Component {
         return blackKeysEdges;
     }
 
-    renderKeyboard() {
-        const { colors, borderColor, whiteColor, blackColor } = this.props;
-
-        const strokeStyle = borderColor || defaultColors.border;
-
-        const whiteKeysEdges = this.getWhiteKeysEdges();
-        const blackKeysEdges = this.getBlackKeysEdges();
-
-        const drawKeys = (edges, keys, color) => {
-            return edges.map(([x0, y0, x1, y1], i) => {
-                let fillStyle = color;
-                const overrideColor = colors?.[keys[i]];
-                if (overrideColor) fillStyle = overrideColor;
-                return (
-                    <Rect
-                        key={color + i}
-                        x={x0}
-                        y={y0}
-                        width={x1 - x0}
-                        height={y1 - y0}
-                        fill={fillStyle}
-                        stroke={strokeStyle}
-                        strokeWidth="1"
-                    />
-                );
-            });
-        };
-
-        const whitePaths = drawKeys(whiteKeysEdges, whiteNotes, whiteColor || defaultColors.white);
-        const blackPaths = drawKeys(blackKeysEdges, blackNotes, blackColor || defaultColors.black);
-        return [...whitePaths, ...blackPaths];
-    }
-
     renderKeyText() {
         const { showLabels = true, customLabels } = this.props;
 
@@ -119,6 +86,40 @@ class OctaveKeyboard extends Component {
         const blackPaths = drawKeys(blackKeysEdges, blackNotes);
         return [...whitePaths, ...blackPaths];
     }
+
+    renderKeyboard() {
+        const { colors, borderColor, whiteColor, blackColor } = this.props;
+
+        const strokeStyle = borderColor || defaultColors.border;
+
+        const whiteKeysEdges = this.getWhiteKeysEdges();
+        const blackKeysEdges = this.getBlackKeysEdges();
+
+        const drawKeys = (edges, keys, color) => {
+            return edges.map(([x0, y0, x1, y1], i) => {
+                let fillStyle = color;
+                const overrideColor = colors?.[keys[i]];
+                if (overrideColor) fillStyle = overrideColor;
+                return (
+                    <Rect
+                        key={color + i}
+                        x={x0}
+                        y={y0}
+                        width={x1 - x0}
+                        height={y1 - y0}
+                        fill={fillStyle}
+                        stroke={strokeStyle}
+                        strokeWidth="1"
+                    />
+                );
+            });
+        };
+
+        const whitePaths = drawKeys(whiteKeysEdges, whiteNotes, whiteColor || defaultColors.white);
+        const blackPaths = drawKeys(blackKeysEdges, blackNotes, blackColor || defaultColors.black);
+        return [...whitePaths, ...blackPaths];
+    }
+
 
     getKey(e) {
         const { offsetX, offsetY } = e.nativeEvent;

@@ -6,8 +6,11 @@ import { colors } from '../theme'; // TODO: replace with styles
 import ScaleKeyboard from './ScaleKeyboard';
 import RemappedKeyboard from './RemappedKeyboard';
 import { ButtonWithText } from './ButtonWithText';
+import { ButtonWithIcon } from './ButtonWithIcon';
 import { ScrollableList } from './ScrollableList';
 import { notes } from '@xivilay/music-theory';
+
+import paletteIcon from '../assets/palette.svg';
 
 class Scales extends Component {
     renderClickableItem(text, color, callback, props = {}) {
@@ -166,14 +169,14 @@ class Scales extends Component {
         );
     }
 
-    render() {
+    render() { 
         return (
             <>
                 {this.renderRoot()}
                 <View {...styles.partContainer}>
                     {this.renderTones()}
                     <View {...styles.buttonsContainer}>
-                        <ButtonWithText text={'✮'} callback={this.props.toggleColors} />
+                        <ButtonWithIcon source={paletteIcon} callback={this.props.toggleColors} />
                         {this.renderToggle()}
                     </View>
                 </View>
