@@ -7,7 +7,7 @@ const overrides = {
     info: {
         height: 80,
     },
-    container: {
+    rootContainer: {
         userSelect: 'none',
     },
 };

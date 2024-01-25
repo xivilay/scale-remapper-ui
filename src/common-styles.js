@@ -1,32 +1,28 @@
 import { colors } from './theme';
 
 const styles = {
-    container: {
+    rootContainer: {
         width: '100%',
         height: '100%',
         backgroundColor: colors.background,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20,
-    },
-    content: {
-        flex: 1.0,
         flexDirection: 'column',
-        flexWrap: 'wrap',
+        padding: 20,
     },
     text: {
         fontSize: 24,
         color: colors.text,
         marginLeft: 5,
-        marginRight: 5,
+        marginRight: 5
     },
     highlightedText: {
         fontSize: 24,
         color: colors.primary,
-        textAlign: 'center'
+        textAlign: 'center',
     },
     highlightedTextContainer: {
-        width: 35
+        width: 35,
     },
     button: {
         minWidth: 'max-content'
@@ -47,10 +43,10 @@ const styles = {
         borderColor: colors.secondary,
         borderRadius: 3,
         flexDirection: 'column',
-        width: '100%',
     },
     listContainer: {
         height: 300,
+        minWidth: 250,
         width: 250,
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -66,8 +62,8 @@ const styles = {
     },
     partContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
+        justifyContent: 'flex-start',
+        minWidth: 500,
     },
     buttonsContainer: {
         flexDirection: 'row',

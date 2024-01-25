@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { Component } from 'react';
 import { Text, View } from 'react-native';
 import styles from '../styles';
 import { colors } from '../theme'; // TODO: replace with styles
@@ -12,203 +11,228 @@ import { notes } from '@xivilay/music-theory';
 
 import paletteIcon from '../assets/palette.svg';
 
-class Scales extends Component {
-    renderClickableItem(text, color, callback, props = {}) {
-        return <TextButton text={text} callback={callback} color={color} props={props} />;
-    }
+const Part = ({ children }) => <View {...styles.partContainer}>{children}</View>;
 
-    renderToggle() {
-        const { enabled, toggleEnabled } = this.props;
-        const stateText = enabled ? 'On' : 'Off';
-        const color = enabled ? colors.primary : colors.textInactive;
-        return <TextButton text={stateText} callback={toggleEnabled} color={color} />;
-    }
+const ClickableItem = ({ item, color, callback, props = {} }) => (
+    <TextButton text={item} callback={callback} color={color} props={props} />
+);
 
-    renderBrowser() {
-        const { names, current, selectName } = this.props;
-        const currentIndex = names.indexOf(current.name);
-        return (
-            <View {...styles.listContainer}>
-                <View {...styles.headingContainer}>
-                    <Text {...styles.text}>{`Browser (${currentIndex + 1} of ${names.length})`}</Text>
-                </View>
-                <ScrollableList
-                    keyExtractor={(item) => item}
-                    data={names}
-                    renderItem={(item, index, props) => {
-                        const color = item === current.name ? colors.primary : colors.text;
-                        return this.renderClickableItem(item, color, () => selectName(item), {
-                            width: '100%',
-                            ...props,
-                        });
-                    }}
-                />
-            </View>
-        );
-    }
+const Toggle = ({ enabled, toggleEnabled }) => {
+    const stateText = enabled ? 'On' : 'Off';
+    const color = enabled ? colors.primary : colors.textInactive;
+    return <TextButton text={stateText} callback={toggleEnabled} color={color} />;
+};
 
-    renderModes() {
-        const { current, indexes, modes, siblings, nextMode, prevMode, nextIndex, prevIndex, selectIntervals } =
-            this.props;
-        const [currentIndex, maxIndex] = indexes;
-        const [currentModeIndex, maxMode] = modes;
-        return (
-            <View {...styles.listContainer}>
-                <View {...styles.headingContainer}>
-                    <View {...styles.headingSubContainer}>
-                        <Text {...styles.text}>Scale:</Text>
-                        <View {...styles.buttonsContainer}>
-                            <TextButton text={'<'} callback={prevIndex} />
-                            <Text {...styles.text}>{`${currentIndex + 1} of ${maxIndex + 1}`}</Text>
-                            <TextButton text={'>'} callback={nextIndex} />
-                        </View>
-                    </View>
-                    <View {...styles.headingSubContainer}>
-                        <Text {...styles.text}>{`Mode: `}</Text>
-                        <View {...styles.buttonsContainer}>
-                            <TextButton text={'<'} callback={prevMode} />
-                            <Text {...styles.text}>{`${+currentModeIndex + 1} of ${maxMode + 1}`}</Text>
-                            <TextButton text={'>'} callback={nextMode} />
-                        </View>
+const Browser = ({ names, current, selectName }) => (
+    <View {...styles.listContainer}>
+        <View {...styles.headingContainer}>
+            <Text {...styles.text}>{`Browser (${names.indexOf(current.name) + 1} of ${names.length})`}</Text>
+        </View>
+        <ScrollableList
+            keyExtractor={(item) => item}
+            data={names}
+            renderItem={(item, index, props) => {
+                const color = item === current.name ? colors.primary : colors.text;
+                return (
+                    <ClickableItem
+                        item={item}
+                        color={color}
+                        callback={() => selectName(item)}
+                        props={{ width: '100%', ...props }}
+                    />
+                );
+            }}
+        />
+    </View>
+);
+
+const Modes = ({ current, indexes, modes, siblings, nextMode, prevMode, nextIndex, prevIndex, selectIntervals }) => {
+    const [currentIndex, maxIndex] = indexes;
+    const [currentModeIndex, maxMode] = modes;
+    return (
+        <View {...styles.listContainer}>
+            <View {...styles.headingContainer}>
+                <View {...styles.headingSubContainer}>
+                    <Text {...styles.text}>Scale:</Text>
+                    <View {...styles.buttonsContainer}>
+                        <TextButton text={'<'} callback={prevIndex} />
+                        <Text {...styles.text}>{`${currentIndex + 1} of ${maxIndex + 1}`}</Text>
+                        <TextButton text={'>'} callback={nextIndex} />
                     </View>
                 </View>
-                <ScrollableList
-                    keyExtractor={(item) => item.id}
-                    data={siblings}
-                    renderItem={(item) => {
-                        const { name, id, intervals } = item;
-                        let color = colors.text;
-                        if (id === current.id) {
-                            color = colors.primary;
-                        } else if (name === 'Unknown') {
-                            color = colors.textInactive;
-                        }
-                        return this.renderClickableItem(name, color, () => selectIntervals(intervals));
-                    }}
-                />
-            </View>
-        );
-    }
-
-    renderInfo() {
-        const { current } = this.props;
-        const info = [`Name: ${current.name || 'Unknown'}`, `Intervals: ${current.id}`];
-
-        return (
-            <View {...styles.info}>
-                {info.map((line, i) => (
-                    <Text key={i} {...styles.text} color={colors.textInactive}>
-                        {line}
-                    </Text>
-                ))}
-            </View>
-        );
-    }
-
-    renderTones() {
-        const tonicsMap = {
-            1: 'Mono',
-            2: 'Dia',
-            3: 'Tri',
-            4: 'Tetra',
-            5: 'Penta',
-            6: 'Hexa',
-            7: 'Hepta',
-            8: 'Octa',
-            9: 'Nona',
-            10: 'Deca',
-        };
-        const { tonics, nextTonics, prevTonics } = this.props;
-        const [currentTonics] = tonics;
-        const tonicsPostfix = tonicsMap[currentTonics] ? `(${tonicsMap[currentTonics]}tonic)` : '';
-        return (
-            <View {...styles.buttonsContainer}>
-                <Text {...styles.text}>Tones: </Text>
-                <TextButton text={'<'} callback={prevTonics} />
-                <View {...styles.highlightedTextContainer}>
-                    <Text {...styles.highlightedText}>{`${currentTonics} `}</Text>
+                <View {...styles.headingSubContainer}>
+                    <Text {...styles.text}>{`Mode: `}</Text>
+                    <View {...styles.buttonsContainer}>
+                        <TextButton text={'<'} callback={prevMode} />
+                        <Text {...styles.text}>{`${+currentModeIndex + 1} of ${maxMode + 1}`}</Text>
+                        <TextButton text={'>'} callback={nextMode} />
+                    </View>
                 </View>
-                <TextButton text={'>'} callback={nextTonics} />
-                <Text {...styles.text}>{`${tonicsPostfix}`}</Text>
             </View>
-        );
-    }
-
-    renderRoot() {
-        const { root, nextRoot, prevRoot } = this.props;
-        const rootNote = notes[root];
-        return (
-            <View {...styles.buttonsContainer}>
-                <Text {...styles.text}>Root: </Text>
-                <TextButton text={'<'} callback={prevRoot} />
-                <View {...styles.highlightedTextContainer}>
-                    <Text {...styles.highlightedText}>{`${rootNote}`}</Text>
-                </View>
-                <TextButton text={'>'} callback={nextRoot} />
-            </View>
-        );
-    }
-
-    renderKeyboard() {
-        return (
-            <ScaleKeyboard
-                width={255}
-                height={100}
-                root={this.props.root}
-                intervals={this.props.current.intervals}
-                onKeyDown={(keyIndex) => {
-                    const { selectKey, current, root } = this.props;
-                    selectKey(current.intervals, root, keyIndex);
+            <ScrollableList
+                keyExtractor={(item) => item.id}
+                data={siblings}
+                renderItem={(item) => {
+                    const { name, id, intervals } = item;
+                    let color = colors.text;
+                    if (id === current.id) {
+                        color = colors.primary;
+                    } else if (name === 'Unknown') {
+                        color = colors.textInactive;
+                    }
+                    return <ClickableItem item={name} color={color} callback={() => selectIntervals(intervals)} />;
                 }}
             />
-        );
-    }
+        </View>
+    );
+};
 
-    renderShiftKeys() {
-        return (
-            <View {...styles.buttonsContainer}>
-                <TextButton text={'<'} callback={this.props.prevShift} />
-                <TextButton text={'>'} callback={this.props.nextShift} />
+const Info = ({ current }) => {
+    const info = [`Name: ${current.name || 'Unknown'}`, `Intervals: ${current.id}`];
+    return (
+        <View {...styles.info}>
+            {info.map((line, i) => (
+                <Text key={i} {...styles.text} color={colors.textInactive}>
+                    {line}
+                </Text>
+            ))}
+        </View>
+    );
+};
+
+const Tones = ({ tonics, nextTonics, prevTonics }) => {
+    const tonicsMap = {
+        1: 'Mono',
+        2: 'Dia',
+        3: 'Tri',
+        4: 'Tetra',
+        5: 'Penta',
+        6: 'Hexa',
+        7: 'Hepta',
+        8: 'Octa',
+        9: 'Nona',
+        10: 'Deca',
+    };
+    const [currentTonics] = tonics;
+    const tonicsPostfix = tonicsMap[currentTonics] ? `(${tonicsMap[currentTonics]}tonic)` : '';
+    return (
+        <View {...styles.buttonsContainer}>
+            <Text {...styles.text}>Tones: </Text>
+            <TextButton text={'<'} callback={prevTonics} />
+            <View {...styles.highlightedTextContainer}>
+                <Text {...styles.highlightedText}>{`${currentTonics} `}</Text>
             </View>
-        );
-    }
+            <TextButton text={'>'} callback={nextTonics} />
+            <Text {...styles.text}>{`${tonicsPostfix}`}</Text>
+        </View>
+    );
+};
 
-    render() {
-        return (
-            <>
-                {this.renderRoot()}
-                <View {...styles.partContainer}>
-                    {this.renderTones()}
-                    <View {...styles.buttonsContainer}>
-                        <IconButton source={paletteIcon} callback={this.props.toggleColors} />
-                        {this.renderToggle()}
-                    </View>
-                </View>
-                <View>
-                    <View {...styles.partContainer}>
-                        {this.renderBrowser()}
-                        {this.renderModes()}
-                    </View>
-                </View>
-                {this.renderInfo()}
-                <View {...styles.partContainer}>
-                    <Text {...styles.text}>Original:</Text>
-                    {this.renderShiftKeys()}
-                </View>
-                {this.renderKeyboard()}
-                <Text {...styles.text}>Remapped:</Text>
-                <RemappedKeyboard
-                    width={255}
-                    height={100}
-                    root={this.props.root}
-                    intervals={this.props.current.intervals}
-                    colorsEnabled={this.props.colorsEnabled}
-                    remapEnabled={this.props.enabled}
-                />
-            </>
-        );
-    }
-}
+const Root = ({ root, nextRoot, prevRoot }) => {
+    const rootNote = notes[root];
+    return (
+        <View {...styles.buttonsContainer}>
+            <Text {...styles.text}>Root: </Text>
+            <TextButton text={'<'} callback={prevRoot} />
+            <View {...styles.highlightedTextContainer}>
+                <Text {...styles.highlightedText}>{`${rootNote}`}</Text>
+            </View>
+            <TextButton text={'>'} callback={nextRoot} />
+        </View>
+    );
+};
+
+const ShiftKeys = ({ prevShift, nextShift }) => (
+    <View {...styles.buttonsContainer}>
+        <TextButton text={'<'} callback={prevShift} />
+        <TextButton text={'>'} callback={nextShift} />
+    </View>
+);
+
+const Scales = ({
+    colorsEnabled,
+    current,
+    enabled,
+    indexes,
+    modes,
+    names,
+    nextIndex,
+    nextMode,
+    nextRoot,
+    nextShift,
+    nextTonics,
+    prevIndex,
+    prevMode,
+    prevRoot,
+    prevShift,
+    prevTonics,
+    root,
+    selectIntervals,
+    selectKey,
+    selectName,
+    siblings,
+    toggleColors,
+    toggleEnabled,
+    tonics,
+}) => (
+    <>
+        <Part>
+            <View {...styles.buttonsContainer}>
+                <Toggle enabled={enabled} toggleEnabled={toggleEnabled} />
+                <IconButton source={paletteIcon} callback={toggleColors} />
+            </View>
+        </Part>
+        <Part>
+            <Root root={root} nextRoot={nextRoot} prevRoot={prevRoot} />
+        </Part>
+        <Part>
+            <Tones tonics={tonics} nextTonics={nextTonics} prevTonics={prevTonics} />
+        </Part>
+        <Part>
+            <Browser names={names} current={current} selectName={selectName} />
+            <Modes
+                current={current}
+                indexes={indexes}
+                modes={modes}
+                siblings={siblings}
+                nextMode={nextMode}
+                prevMode={prevMode}
+                nextIndex={nextIndex}
+                prevIndex={prevIndex}
+                selectIntervals={selectIntervals}
+            />
+        </Part>
+        <Part>
+            <Info current={current} />
+        </Part>
+
+        <Part>
+            <Text {...styles.text}>Original:</Text>
+            <ShiftKeys prevShift={prevShift} nextShift={nextShift} />
+        </Part>
+        <ScaleKeyboard
+            width={255}
+            height={100}
+            root={root}
+            intervals={current.intervals}
+            onKeyDown={(keyIndex) => {
+                selectKey(current.intervals, root, keyIndex);
+            }}
+        />
+
+        <Part {...styles.partContainer}>
+            <Text {...styles.text}>Remapped:</Text>
+        </Part>
+        <RemappedKeyboard
+            width={255}
+            height={100}
+            root={root}
+            intervals={current.intervals}
+            colorsEnabled={colorsEnabled}
+            remapEnabled={enabled}
+        />
+    </>
+);
 
 Scales.propTypes = {
     enabled: PropTypes.bool.isRequired,

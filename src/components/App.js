@@ -17,14 +17,12 @@ const App = () => {
     }, []);
 
     return (
-        <View {...styles.container}>
-            <View {...styles.content}>
-                {store && (
-                    <Provider store={store}>
-                        <Scales />
-                    </Provider>
-                )}
-            </View>
+        <View {...styles.rootContainer}>
+            {store && (
+                <Provider store={store}>
+                    <Scales />
+                </Provider>
+            )}
         </View>
     );
 };
